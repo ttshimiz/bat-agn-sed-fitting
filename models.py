@@ -129,3 +129,62 @@ class TwoTempGreybody(Fittable1DModel):
     def set_lumD(self, ld):
         self.lumD = ld*u.Mpc
         self.lumD_cm = (ld*u.Mpc).cgs.value  # Convert to cm
+
+
+class GreybodyPowerlaw(Fittable1DModel):
+
+    mdust = Parameter()
+    tdust = Parameter()
+    beta = Parameter(default=2.0, bounds=(0, 5))
+    pownorm = Parameter()
+    alpha = Parameter(default=2.0, bounds=(-5, 5))
+    wturn = Parameter(default=40.0, bounds=(20, 100))
+
+    def __init__(self, mdust, tdust, beta, pownorm, alpha, wturn,
+                 lumD=1.0, kappa0=0.192, lambda_norm=350.):
+
+        self.set_kappa0(kappa0)
+        self.set_lambda_norm(lambda_norm)
+        self.set_lumD(lumD)
+
+        super(GreybodyPowerlaw, self).__init__(mdust, tdust, beta,
+                                               pownorm, alpha, wturn)
+
+    def evaluate(self, x, mdust, tdust, beta,
+                 pownorm, alpha, wturn):
+
+        md = (10**mdust*u.Msun).to(u.g).value
+        n = c.c.to(u.micron/u.s).value/x
+        flux_grey = (md * self.k0_cgs *
+                     (n / self.nu_norm)**beta *
+                     np.pi * blackbody_nu(n, tdust).value /
+                     self.lumD_cm**2)*1e23
+
+        flux_plaw = (10**pownorm) * (x/wturn)**alpha * np.exp(-(x/wturn)**2)
+
+        return flux_grey + flux_plaw
+
+    def eval_grey(self, x):
+        md = (10**self.mdust*u.Msun).to(u.g).value
+        n = c.c.to(u.micron/u.s).value/x
+        flux_grey = (md * self.k0_cgs *
+                     (n / self.nu_norm)**self.beta *
+                     np.pi * blackbody_nu(n, self.tdust).value /
+                     self.lumD_cm**2)*1e23
+        return flux_grey
+
+    def eval_plaw(self, x):
+        return ((10**self.pownorm) * (x/self.wturn)**self.alpha *
+                np.exp(-(x/self.wturn)**2))
+
+    def set_kappa0(self, k0):
+        self.kappa0 = k0*u.m**2/u.kg
+        self.k0_cgs = (k0*u.m**2/u.kg).cgs.value   # Convert to cm**2/g
+
+    def set_lambda_norm(self, lnorm):
+        self.lambda_norm = lnorm*u.micron
+        self.nu_norm = (c.c.to(u.micron/u.s)/lnorm).value  # Convert to Hz
+
+    def set_lumD(self, ld):
+        self.lumD = ld*u.Mpc
+        self.lumD_cm = (ld*u.Mpc).cgs.value  # Convert to cm
