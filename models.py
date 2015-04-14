@@ -8,7 +8,7 @@ Models currently include:
     4. DecompIR templates
     5. Dale et al 2014 models
 
-Models will all be subclasses of the Astropy Fittable1DModel class.
+Most models will be subclasses of the Astropy Fittable1DModel class.
 
 Created on Thu Apr  9 16:25:56 2015
 
