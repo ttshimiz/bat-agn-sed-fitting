@@ -250,11 +250,12 @@ class GreybodyPowerlaw(Fittable1DModel):
     wturn = Parameter(default=40.0, bounds=(20, 100))
 
     def __init__(self, mdust, tdust, beta, pownorm, alpha, wturn,
-                 lumD=1.0, kappa0=0.192, lambda_norm=350.):
+                 kappa0=0.192, lambda_norm=350., redshift=0, lumD=1.0):
 
         self.set_kappa0(kappa0)
         self.set_lambda_norm(lambda_norm)
         self.set_lumD(lumD)
+        self.set_redshift(redshift)
 
         super(GreybodyPowerlaw, self).__init__(mdust, tdust, beta,
                                                pownorm, alpha, wturn)
@@ -338,3 +339,10 @@ class GreybodyPowerlaw(Fittable1DModel):
 
         self.lumD = ld*u.Mpc  # Attach units to luminosity distance
         self.lumD_cm = (ld*u.Mpc).cgs.value  # Convert to cm
+
+    def set_redshift(self, zz):
+        """
+        Method to change the redshift.
+        """
+
+        self.redshift = zz
