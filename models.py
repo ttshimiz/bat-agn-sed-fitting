@@ -16,10 +16,17 @@ Created on Thu Apr  9 16:25:56 2015
 """
 
 from astropy.modeling import Fittable1DModel, Parameter
-from astropy.analytic_functions import blackbody_nu
 import astropy.units as u
-import astropy.constants as c
+import astropy.constants as const
 import numpy as np
+
+# Global constants
+c_micron = const.c.to(u.micron/u.s).value
+Msun_to_g = const.M_sun.to(u.g).value
+planck_h = const.h.cgs.value
+k_b = const.k_B.cgs.value
+c = const.c.cgs.value
+pc2cm = const.pc.cgs.value
 
 
 # Single Temperature Greybody
@@ -61,11 +68,12 @@ class Greybody(Fittable1DModel):
 
     def evaluate(self, x, mdust, tdust, beta):
 
-        md = (10**mdust*u.Msun).to(u.g).value  # Convert dust mass to grams
-        n = c.c.to(u.micron/u.s).value/x  # Calculate frequency of lambda_norm
-
+        md = (10**mdust)*Msun_to_g  # Convert dust mass to grams
+        n = c_micron/x  # Calculate frequency of lambda_norm
+        bnu = ((2 * planck_h * n**3 / c**2) *
+               1 / (np.exp(planck_h * n / k_b / tdust) - 1))
         return (md * self.k0_cgs * (n / self.nu_norm)**beta * np.pi *
-                blackbody_nu(n, tdust).value / self.lumD_cm**2)*1e23
+                bnu / self.lumD_cm**2)*1e23
 
     def set_kappa0(self, k0):
         """
@@ -148,17 +156,21 @@ class TwoTempGreybody(Fittable1DModel):
     def evaluate(self, x, mdust_warm, tdust_warm, beta_warm,
                  mdust_cold, tdust_cold, beta_cold):
 
-        mwarm = (10**mdust_warm*u.Msun).to(u.g).value
-        mcold = (10**mdust_cold*u.Msun).to(u.g).value
-        n = c.c.to(u.micron/u.s).value/x
+        mwarm = (10**mdust_warm)*Msun_to_g
+        mcold = (10**mdust_cold)*Msun_to_g
+        n = c_micron/x
+        bnu_warm = ((2 * planck_h * n**3 / c**2) *
+                    1 / (np.exp(planck_h * n / k_b / tdust_warm) - 1))
+        bnu_cold = ((2 * planck_h * n**3 / c**2) *
+                    1 / (np.exp(planck_h * n / k_b / tdust_cold) - 1))
         flux_warm = (mwarm * self.k0_cgs *
                      (n / self.nu_norm)**beta_warm *
-                     np.pi * blackbody_nu(n, tdust_warm).value /
+                     np.pi * bnu_warm /
                      self.lumD_cm**2)*1e23
 
         flux_cold = (mcold * self.k0_cgs *
                      (n / self.nu_norm)**beta_cold *
-                     np.pi * blackbody_nu(n, tdust_cold).value /
+                     np.pi * bnu_cold /
                      self.lumD_cm**2)*1e23
         return flux_warm + flux_cold
 
@@ -167,11 +179,13 @@ class TwoTempGreybody(Fittable1DModel):
         Method for evaluating only the warm component flux.
         """
 
-        mwarm = (10**self.mdust_warm*u.Msun).to(u.g).value
-        n = c.c.to(u.micron/u.s).value/x
+        mwarm = (10**self.mdust_warm)*Msun_to_g
+        n = c_micron/x
+        bnu = ((2 * planck_h * n**3 / c**2) *
+               1 / (np.exp(planck_h * n / k_b / self.tdust_warm) - 1))
         flux_warm = (mwarm * self.k0_cgs *
                      (n / self.nu_norm)**self.beta_warm *
-                     np.pi * blackbody_nu(n, self.tdust_warm).value /
+                     np.pi * bnu /
                      self.lumD_cm**2)*1e23
 
         return flux_warm
@@ -181,11 +195,13 @@ class TwoTempGreybody(Fittable1DModel):
         Method for evaluating only the cold component flux.
         """
 
-        mcold = (10**self.mdust_cold*u.Msun).to(u.g).value
-        n = c.c.to(u.micron/u.s).value/x
+        mcold = (10**self.mdust_cold)*Msun_to_g
+        n = c_micron/x
+        bnu = ((2 * planck_h * n**3 / c**2) *
+               1 / (np.exp(planck_h * n / k_b / self.tdust_cold) - 1))
         flux_cold = (mcold * self.k0_cgs *
                      (n / self.nu_norm)**self.beta_cold *
-                     np.pi * blackbody_nu(n, self.tdust_cold).value /
+                     np.pi * bnu /
                      self.lumD_cm**2)*1e23
 
         return flux_cold
@@ -263,11 +279,13 @@ class GreybodyPowerlaw(Fittable1DModel):
     def evaluate(self, x, mdust, tdust, beta,
                  pownorm, alpha, wturn):
 
-        md = (10**mdust*u.Msun).to(u.g).value
-        n = c.c.to(u.micron/u.s).value/x
+        md = (10**mdust)*Msun_to_g
+        n = c_micron/x
+        bnu = ((2 * planck_h * n**3 / c**2) *
+               1 / (np.exp(planck_h * n / k_b / tdust) - 1))
         flux_grey = (md * self.k0_cgs *
                      (n / self.nu_norm)**beta *
-                     np.pi * blackbody_nu(n, tdust).value /
+                     np.pi * bnu /
                      self.lumD_cm**2)*1e23
 
         flux_plaw = (10**pownorm) * (x/wturn)**alpha * np.exp(-(x/wturn)**2)
@@ -289,11 +307,13 @@ class GreybodyPowerlaw(Fittable1DModel):
               The flux at wavelengths, x in Jy
         """
 
-        md = (10**self.mdust*u.Msun).to(u.g).value
-        n = c.c.to(u.micron/u.s).value/x
+        md = (10**self.mdust)*Msun_to_g
+        n = c_micron/x
+        bnu = ((2 * planck_h * n**3 / c**2) *
+               1 / (np.exp(planck_h * n / k_b / self.tdust) - 1))
         flux_grey = (md * self.k0_cgs *
                      (n / self.nu_norm)**self.beta *
-                     np.pi * blackbody_nu(n, self.tdust).value /
+                     np.pi * bnu /
                      self.lumD_cm**2)*1e23
         return flux_grey
 
@@ -330,7 +350,7 @@ class GreybodyPowerlaw(Fittable1DModel):
         """
 
         self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
-        self.nu_norm = (c.c.to(u.micron/u.s)/lnorm).value  # Convert to Hz
+        self.nu_norm = (c_micron/lnorm)  # Convert to Hz
 
     def set_lumD(self, ld):
         """
