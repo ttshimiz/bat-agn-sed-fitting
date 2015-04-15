@@ -33,7 +33,7 @@ h500_filter = h500_filter[h500_ind]
 h500_filter = h500_filter[-1::-1]
 
 # CONSTANTS
-C_MICRON = c.c.to(u.micron/u.s).value
+c_micron = c.c.to(u.micron/u.s).value
 
 
 def log_like(params, x, y, yerr, sed_model, fixed):
@@ -99,8 +99,8 @@ def convolve_with_trans(sed_waves, sed_flux, filt_waves, filt_trans):
 
     # Integrate over all wavelengths (but use the frequencies
     # since the SED is in Jy)
-    integ_num = np.trapz(C_MICRON/sed_waves, interp_trans*sed_flux)
-    integ_denom = np.trapz(C_MICRON/sed_waves, interp_trans)
+    integ_num = np.trapz(c_micron/sed_waves, interp_trans*sed_flux)
+    integ_denom = np.trapz(c_micron/sed_waves, interp_trans)
 
     return integ_num/integ_denom
 
@@ -188,8 +188,7 @@ class SEDBayesFitter(object):
 
     def fit(self, model, x, y, yerr):
 
-        fixed = np.array([model.fixed[model.param_names[i]]
-                          for i in range(len(model.param_names))])
+        fixed = np.array([model.fixed.values()])
         self.ndims = np.sum(~fixed)
 
         # Use the current model parameters as the initial values
