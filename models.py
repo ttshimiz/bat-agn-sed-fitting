@@ -16,6 +16,7 @@ Created on Thu Apr  9 16:25:56 2015
 """
 
 from astropy.modeling import Fittable1DModel, Parameter
+import astropy.cosmology as apy_cosmo
 import astropy.units as u
 import astropy.constants as const
 import numpy as np
@@ -29,8 +30,45 @@ c = const.c.cgs.value
 pc2cm = const.pc.cgs.value
 
 
+# Set the cosmology to use
+cosmo = apy_cosmo.FlatLambdaCDM(H0=70., Om0=0.3)
+
+
+# Base SED Model class
+class SEDModel(Fittable1DModel):
+
+    def set_lumD(self, ld):
+        """
+        Method to change the luminosity distance.
+        """
+        if ld is None:
+            self.lumD = cosmo.luminosity_distance(self.redshift).value
+            self.lumD_cm = cosmo.luminosity_distance(self.redshift).cgs.value
+        else:
+            self.lumD = ld  # Attach units to luminosity distance
+            self.lumD_cm = (ld*u.Mpc).cgs.value  # Convert to cm
+
+    def set_redshift(self, zz):
+        """
+        Method to change the redshift.
+        """
+
+        self.redshift = zz
+
+    def calc_luminosity(self, lower=8.0, upper=1000.0):
+
+        waves = np.arange(lower, upper, 0.01)
+        freq = c_micron/waves
+
+        flux_density = self(waves)/1e23
+        integral = -np.trapz(flux_density, freq)
+        lum = (4*np.pi)*(self.lumD_cm)**2*integral/const.L_sun.cgs.value
+
+        return lum
+
+
 # Single Temperature Greybody
-class Greybody(Fittable1DModel):
+class Greybody(SEDModel):
     """
     Single temperature greybody.
     Free parameters include dust mass, emissivity, and dust temperature.
@@ -57,11 +95,12 @@ class Greybody(Fittable1DModel):
     tdust = Parameter()
     beta = Parameter(default=2.0, bounds=(0, 5))
 
-    def __init__(self, mdust, tdust, beta, lumD=1.0, kappa0=0.192,
-                 lambda_norm=350.):
+    def __init__(self, mdust, tdust, beta, kappa0=0.192,
+                 lambda_norm=350., lumD=None, redshift=0.1):
 
         self.set_kappa0(kappa0)
         self.set_lambda_norm(lambda_norm)
+        self.set_redshift(redshift)
         self.set_lumD(lumD)
 
         super(Greybody, self).__init__(mdust, tdust, beta)
@@ -92,16 +131,8 @@ class Greybody(Fittable1DModel):
         self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
         self.nu_norm = (c.c.to(u.micron/u.s)/lnorm).value  # Convert to Hz
 
-    def set_lumD(self, ld):
-        """
-        Method to change the luminosity distance.
-        """
 
-        self.lumD = ld*u.Mpc  # Attach units to luminosity distance
-        self.lumD_cm = (ld*u.Mpc).cgs.value  # Convert to cm
-
-
-class TwoTempGreybody(Fittable1DModel):
+class TwoTempGreybody(SEDModel):
     """
     Two temperature greybody model with a warm and cold component.
 
@@ -140,10 +171,12 @@ class TwoTempGreybody(Fittable1DModel):
 
     def __init__(self, mdust_warm, tdust_warm, beta_warm,
                  mdust_cold, tdust_cold, beta_cold,
-                 lumD=1.0, kappa0=0.192, lambda_norm=350.):
+                 kappa0=0.192, lambda_norm=350.,
+                 lumD=None, redshift=0.1):
 
         self.set_kappa0(kappa0)
         self.set_lambda_norm(lambda_norm)
+        self.set_redshift(redshift)
         self.set_lumD(lumD)
 
         super(TwoTempGreybody, self).__init__(mdust_warm,
@@ -223,16 +256,8 @@ class TwoTempGreybody(Fittable1DModel):
         self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
         self.nu_norm = (c.c.to(u.micron/u.s)/lnorm).value  # Convert to Hz
 
-    def set_lumD(self, ld):
-        """
-        Method to change the luminosity distance.
-        """
 
-        self.lumD = ld*u.Mpc  # Attach units to luminosity distance
-        self.lumD_cm = (ld*u.Mpc).cgs.value  # Convert to cm
-
-
-class GreybodyPowerlaw(Fittable1DModel):
+class GreybodyPowerlaw(SEDModel):
     """
     Greybody+Powerlaw model described in Casey 2012
 
@@ -266,12 +291,12 @@ class GreybodyPowerlaw(Fittable1DModel):
     wturn = Parameter(default=40.0, bounds=(20, 100))
 
     def __init__(self, mdust, tdust, beta, pownorm, alpha, wturn,
-                 kappa0=0.192, lambda_norm=350., redshift=0, lumD=1.0):
+                 kappa0=0.192, lambda_norm=350., redshift=0.1, lumD=None):
 
         self.set_kappa0(kappa0)
         self.set_lambda_norm(lambda_norm)
-        self.set_lumD(lumD)
         self.set_redshift(redshift)
+        self.set_lumD(lumD)
 
         super(GreybodyPowerlaw, self).__init__(mdust, tdust, beta,
                                                pownorm, alpha, wturn)
@@ -352,17 +377,3 @@ class GreybodyPowerlaw(Fittable1DModel):
         self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
         self.nu_norm = (c_micron/lnorm)  # Convert to Hz
 
-    def set_lumD(self, ld):
-        """
-        Method to change the luminosity distance.
-        """
-
-        self.lumD = ld*u.Mpc  # Attach units to luminosity distance
-        self.lumD_cm = (ld*u.Mpc).cgs.value  # Convert to cm
-
-    def set_redshift(self, zz):
-        """
-        Method to change the redshift.
-        """
-
-        self.redshift = zz
