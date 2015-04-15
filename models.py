@@ -259,7 +259,7 @@ class GreybodyPowerlaw(Fittable1DModel):
                By default constrained to be between 20 and 100.
     """
     mdust = Parameter()
-    tdust = Parameter()
+    tdust = Parameter(bounds=(0, 100))
     beta = Parameter(default=2.0, bounds=(0, 5))
     pownorm = Parameter()
     alpha = Parameter(default=2.0, bounds=(-5, 5))
