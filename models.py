@@ -287,10 +287,10 @@ class GreybodyPowerlaw(Fittable1DModel):
         wturn: wavelength where the powerlaw component is exponentially cutoff.
                By default constrained to be between 20 and 100.
     """
-    mdust = Parameter()
+    mdust = Parameter(bounds=(1, 10))
     tdust = Parameter(bounds=(0, 100))
     beta = Parameter(default=2.0, bounds=(0, 5))
-    pownorm = Parameter()
+    pownorm = Parameter(bounds=(-10, 10))
     alpha = Parameter(default=2.0, bounds=(-5, 5))
     wturn = Parameter(default=40.0, bounds=(20, 100))
 
