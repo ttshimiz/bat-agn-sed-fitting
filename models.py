@@ -301,7 +301,8 @@ class GreybodyPowerlaw(Fittable1DModel):
         self.set_lambda_norm(lambda_norm)
         self.set_redshift(redshift)
         self.set_lumD(lumD)
-
+        self.chain = None
+        self.chain_nb = None
         super(GreybodyPowerlaw, self).__init__(mdust, tdust, beta,
                                                pownorm, alpha, wturn)
 
