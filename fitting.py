@@ -24,20 +24,10 @@ def log_like(params, x, y, yerr, sed_model, fixed, filts, filt_all):
 
 def log_prior(params, sed_model, fixed):
 
-    lp = 0
+    bounds = np.array(sed_model.bounds.values())[~fixed]
+    lp = map(uniform_prior, params, bounds)
 
-    for i, n in enumerate(np.array(sed_model.param_names)[~fixed]):
-        low, up = sed_model.bounds[n]
-        if up is None:
-            up = np.inf
-        if low is None:
-            low = -np.inf
-
-        if (params[i] < up) & (params[i] > low):
-            lp += 0
-        else:
-            lp = -np.inf
-    return lp
+    return sum(lp)
 
 
 def log_post(params, x, y, yerr, sed_model, fixed, filts, filt_all):
@@ -48,6 +38,18 @@ def log_post(params, x, y, yerr, sed_model, fixed, filts, filt_all):
     if not np.isfinite(lprior) or not np.isfinite(llike):
         return -np.inf
     return lprior + llike
+
+
+def uniform_prior(x, bounds):
+    if bounds[0] is None:
+        bounds[0] = -np.inf
+    if bounds[1] is None:
+        bounds[1] = np.inf
+
+    if (x > bounds[0]) & (x < bounds[1]):
+        return 0
+    else:
+        return -np.inf
 
 
 # Calculate monochromatic flux densities of the model using the
@@ -65,23 +67,17 @@ def calc_model(waves, params, sed_model, fixed, filts, filt_all):
     with the transmission curve.
     """
 
-    # Array to store the calculated model fluxes
-    model_fluxes = np.zeros(np.shape(waves))
-
     # Dummy model
     dummy = sed_model.copy()
+    dummy.parameters[~fixed] = params
+    fwaves = filt_all.filter_waves
+    zz = dummy.redshift
+    zcorr = 1 / (1 + zz)
 
-    for i, f in enumerate(filts):
+    func = filt_all.calc_mono_flux
 
-        # Calculate the model at the rest frame wavelengths
-        dummy.parameters[~fixed] = params
-        rest_waves = filt_all.filter_waves[f] / (1+sed_model.redshift)
-        rest_total_model = dummy(rest_waves)
-
-        # Convolve the SED with the transmission curve
-        model_fluxes[i] = filt_all.calc_mono_flux(f, rest_waves,
-                                                  rest_total_model,
-                                                  dummy.redshift)
+    model_fluxes = np.array([func(f, fwaves[f]*zcorr,
+                                  dummy(fwaves[f]*zcorr), zz) for f in filts])
 
     return model_fluxes
 
