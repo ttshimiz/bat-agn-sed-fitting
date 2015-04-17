@@ -33,12 +33,15 @@ def log_prior(params, sed_model, fixed):
 
 def log_post(params, x, y, yerr, sed_model, fixed, filts, filt_all):
 
-    llike = log_like(params, x, y, yerr, sed_model, fixed, filts, filt_all)
     lprior = log_prior(params, sed_model, fixed)
-
-    if not np.isfinite(lprior) or not np.isfinite(llike):
+    if not np.ifinite(lprior):
         return -np.inf
-    return lprior + llike
+    else:
+        llike = log_like(params, x, y, yerr, sed_model, fixed, filts, filt_all)
+        if not np.isfinite(llike):
+            return -np.inf
+        else:
+            return lprior + llike
 
 
 def uniform_prior(x, bounds):
