@@ -109,11 +109,12 @@ class SEDBayesFitter(object):
 
     def fit(self, model, x, y, yerr=None, filts=None):
 
-        fixed = np.array(model.fixed.values())
+        mod = model.copy()
+        fixed = np.array(mod.fixed.values())
         self.ndims = np.sum(~fixed)
 
         # Use the current model parameters as the initial values
-        init = model.parameters[~fixed]
+        init = mod.parameters[~fixed]
         init_walkers = [init + 1e-4*np.random.randn(self.ndims)
                         for k in range(self.nwalkers)]
 
@@ -122,19 +123,21 @@ class SEDBayesFitter(object):
 
         # Setup the MCMC sampler
         mcmc = emcee.EnsembleSampler(self.nwalkers, self.ndims, log_post,
-                                     args=(x, y, yerr, model, fixed,
+                                     args=(x, y, yerr, mod, fixed,
                                            filts, filt_all),
                                      threads=self.threads)
 
         mcmc.run_mcmc(init_walkers, self.nsteps)
 
-        self.chain = mcmc.chain[:, :, :].reshape(-1, self.ndims)
-        self.chain_nb = mcmc.chain[:, self.nburn:, :].reshape(-1, self.ndims)
+        mod.chain = mcmc.chain[:, :, :].reshape(-1, self.ndims)
+        mod.chain_nb = mcmc.chain[:, self.nburn:, :].reshape(-1, self.ndims)
 
         if self.threads > 1:
             mcmc.pool.close()
 
-        model.parameters[~fixed] = np.median(self.chain_nb, axis=0)
+        mod.parameters[~fixed] = np.median(self.chain_nb, axis=0)
+
+        return mod
 
 
 class Filters(object):
