@@ -127,7 +127,8 @@ class SEDBayesFitter(object):
         self.chain = mcmc.chain[:, :, :].reshape(-1, self.ndims)
         self.chain_nb = mcmc.chain[:, self.nburn:, :].reshape(-1, self.ndims)
 
-        mcmc.pool.close()
+        if self.threads > 1:
+            mcmc.pool.close()
 
         model.parameters[~fixed] = np.median(self.chain_nb, axis=0)
 
