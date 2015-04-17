@@ -110,7 +110,7 @@ class SEDBayesFitter(object):
     def fit(self, model, x, y, yerr=None, filts=None):
 
         mod = model.copy()
-        fixed = np.array(mod.fixed.values())
+        fixed = np.array([mod.bounds[n] for n in mod.param_names])
         self.ndims = np.sum(~fixed)
 
         # Use the current model parameters as the initial values
