@@ -1,0 +1,15 @@
+1. Read the paper to familiarize yourself with the models.  Beware that I've only constrained the models longward of 5um.
+
+2. In the gzipped tarball you will find 21 different spectral models, for 21 different AGN fractions.
+
+3. The filename spectra.X.YZAGN.dat implies a mid-infrared AGN percentage of 100*X.YZ
+
+4. The format of the models is:
+
+col. 1:  lambda in um
+col. 2:  log of nu*f_nu for alpha_SF=0.0625
+col. 3:  log of nu*f_nu for alpha_SF=0.1250
+.
+.
+.
+col. 65: log of nu*f_nu for alpha_SF=4.0000
