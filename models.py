@@ -20,6 +20,8 @@ import astropy.cosmology as apy_cosmo
 import astropy.units as u
 import astropy.constants as const
 import numpy as np
+from scipy import optimize as opt
+from fitting import Filters
 
 # Global constants
 c_micron = const.c.to(u.micron/u.s).value
@@ -29,9 +31,11 @@ k_b = const.k_B.cgs.value
 c = const.c.cgs.value
 pc2cm = const.pc.cgs.value
 
-
 # Set the cosmology to use
 cosmo = apy_cosmo.FlatLambdaCDM(H0=70., Om0=0.3)
+
+# Import all of the Filters
+filters = Filters()
 
 
 # Base SED Model class
@@ -96,7 +100,7 @@ class Greybody(SEDModel):
     beta = Parameter(default=2.0, bounds=(0, 5))
 
     def __init__(self, mdust, tdust, beta, kappa0=0.192,
-                 lambda_norm=350., lumD=None, redshift=0.1):
+                 lambda_norm=350., lumD=None, redshift=0.001):
 
         self.set_kappa0(kappa0)
         self.set_lambda_norm(lambda_norm)
@@ -172,7 +176,7 @@ class TwoTempGreybody(SEDModel):
     def __init__(self, mdust_warm, tdust_warm, beta_warm,
                  mdust_cold, tdust_cold, beta_cold,
                  kappa0=0.192, lambda_norm=350.,
-                 lumD=None, redshift=0.1):
+                 lumD=None, redshift=0.001):
 
         self.set_kappa0(kappa0)
         self.set_lambda_norm(lambda_norm)
@@ -257,7 +261,7 @@ class TwoTempGreybody(SEDModel):
         self.nu_norm = (c.c.to(u.micron/u.s)/lnorm).value  # Convert to Hz
 
 
-class GreybodyPowerlaw(SEDModel):
+class GreybodyPowerlaw(Fittable1DModel):
     """
     Greybody+Powerlaw model described in Casey 2012
 
@@ -291,7 +295,7 @@ class GreybodyPowerlaw(SEDModel):
     wturn = Parameter(default=40.0, bounds=(20, 100))
 
     def __init__(self, mdust, tdust, beta, pownorm, alpha, wturn,
-                 kappa0=0.192, lambda_norm=350., redshift=0.1, lumD=None):
+                 kappa0=0.192, lambda_norm=350., redshift=0.001, lumD=None):
 
         self.set_kappa0(kappa0)
         self.set_lambda_norm(lambda_norm)
@@ -377,3 +381,140 @@ class GreybodyPowerlaw(SEDModel):
         self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
         self.nu_norm = (c_micron/lnorm)  # Convert to Hz
 
+    def set_lumD(self, ld):
+        """
+        Method to change the luminosity distance.
+        """
+        if ld is None:
+            self.lumD = cosmo.luminosity_distance(self.redshift).value
+            self.lumD_cm = cosmo.luminosity_distance(self.redshift).cgs.value
+        else:
+            self.lumD = ld  # Attach units to luminosity distance
+            self.lumD_cm = (ld*u.Mpc).cgs.value  # Convert to cm
+
+    def set_redshift(self, zz):
+        """
+        Method to change the redshift.
+        """
+
+        self.redshift = zz
+
+    def calc_luminosity(self, lower=8.0, upper=1000.0):
+
+        waves = np.arange(lower, upper, 0.01)
+        freq = c_micron/waves
+
+        flux_density = self(waves)/1e23
+        integral = -np.trapz(flux_density, freq)
+        lum = (4*np.pi)*(self.lumD_cm)**2*integral/const.L_sun.cgs.value
+
+        return lum
+
+
+class Dale2014(object):
+
+    def __init__(self, redshift=0.001, lumD=None):
+
+        self.set_redshift(redshift)
+        self.set_lumD(lumD)
+
+        self.alpha = np.arange(0.0625, 4.0625, 0.0625)
+        self.fracAGN = np.arange(0, 1.05, 0.05)
+        self.waves = np.loadtxt('./Dale14/spectra/spectra.0.00AGN.dat',
+                                usecols=[0])
+
+        self.models = np.zeros((len(self.alpha),
+                                len(self.waves),
+                                len(self.fracAGN)))
+
+        for i in range(len(self.fracAGN)):
+            fn = 'spectra.{0:0.2f}AGN.dat'.format(self.fracAGN[i])
+            m = np.loadtxt('./Dale14/spectra/'+fn).T
+            self.models[:, :, i] = m[1:, :]+44 - np.log10(c_micron/self.waves)
+
+    def set_lumD(self, ld):
+        """
+        Method to change the luminosity distance.
+        """
+        if ld is None:
+            self.lumD = cosmo.luminosity_distance(self.redshift).value
+            self.lumD_cm = cosmo.luminosity_distance(self.redshift).cgs.value
+        else:
+            self.lumD = ld  # Attach units to luminosity distance
+            self.lumD_cm = (ld*u.Mpc).cgs.value  # Convert to cm
+
+    def set_redshift(self, zz):
+        """
+        Method to change the redshift.
+        """
+
+        self.redshift = zz
+
+    def fit(self, x, y, yerr=None, filts=None,
+            alpha_use='all', fracAGN_use='all'):
+
+        if alpha_use == 'all':
+            self.alpha_use = np.arange(0.0625, 4.0, 0.0625)
+        else:
+            self.alpha_use = alpha_use
+
+        if fracAGN_use == 'all':
+            self.fracAGN_use = np.arange(0, 1.05, 0.05)
+        else:
+            self.fracAGN_use = fracAGN_use
+
+        if yerr is None:
+            yerr = np.ones(len(x))
+
+        self.chi_sq = np.zeros((len(self.alpha_use), len(self.fracAGN_use)))
+        self.norms = np.zeros((len(self.alpha_use), len(self.fracAGN_use)))
+
+        def errfunc(norm, obs, model, err):
+            return (obs - (norm*model)) / err
+
+        for a in range(len(self.alpha_use)):
+            for f in range(len(self.fracAGN_use)):
+
+                model_fluxes = np.zeros(len(x))
+
+                for w in range(len(x)):
+                    sed = self.get_sed(self.alpha_use[a], self.fracAGN[f])
+                    model_fluxes[w] = filters.calc_mono_flux(filts[w],
+                                                             self.waves, sed,
+                                                             self.redshift)
+                out = opt.leastsq(errfunc, 1, args=(y, model_fluxes, yerr))
+
+                self.norms[a, f] = out[0][0]
+                self.chi_sq[a, f] = np.sum(errfunc(self.norms[a, f], y,
+                                           model_fluxes, yerr)**2)
+
+        self.best_fit = {}
+        indmin = np.where(self.chi_sq == min(self.chi_sq.flatten()))
+        self.best_fit['chi2'] = min(self.chi_sq.flatten())
+        self.best_fit['alpha'] = self.alpha_use[indmin[0][0]]
+        self.best_fit['fracAGN'] = self.fracAGN_use[indmin[1][0]]
+        self.best_fit['norm'] = self.norms[indmin[0][0], indmin[1][0]]
+        self.best_fit['sed'] = self.get_sed(self.best_fit['alpha'],
+                                            self.best_fit['fracAGN'],
+                                            self.best_fit['norm'])
+        lir = self.calc_luminosity(self.best_fit['alpha'],
+                                   self.best_fit['fracAGN'],
+                                   self.best_fit['norm'])
+        self.best_fit['LIR'] = np.log10(lir)
+
+    def get_sed(self, alph, fa, norm=1.0):
+        i = self.alpha == alph
+        j = self.fracAGN == fa
+        sed = norm*10**self.models[i, :, j].flatten()
+        return sed
+
+    def calc_luminosity(self, alph, fa, norm=1.0, low=8., high=1000.):
+        sed = self.get_sed(alph, fa)
+        waves = self.waves
+        freq = c_micron/waves
+
+        flux_density = norm*sed/1e23
+        integral = -np.trapz(flux_density, freq)
+        lum = (4*np.pi)*(self.lumD_cm)**2*integral/const.L_sun.cgs.value
+
+        return lum
