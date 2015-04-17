@@ -135,7 +135,7 @@ class SEDBayesFitter(object):
         if self.threads > 1:
             mcmc.pool.close()
 
-        mod.parameters[~fixed] = np.median(self.chain_nb, axis=0)
+        mod.parameters[~fixed] = np.median(mod.chain_nb, axis=0)
 
         return mod
 
