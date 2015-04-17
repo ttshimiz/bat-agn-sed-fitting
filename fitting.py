@@ -50,7 +50,7 @@ def uniform_prior(x, bounds):
     if bounds[1] is None:
         bounds[1] = np.inf
 
-    if (x >= bounds[0]) & (x =< bounds[1]):
+    if (x >= bounds[0]) & (x <= bounds[1]):
         return 0
     else:
         return -np.inf
