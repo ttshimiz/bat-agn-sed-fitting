@@ -24,7 +24,8 @@ def log_like(params, x, y, yerr, sed_model, fixed, filts, filt_all):
 
 def log_prior(params, sed_model, fixed):
 
-    bounds = np.array(sed_model.bounds.values())[~fixed]
+    bounds = np.array([sed_model.bounds[n] for n in sed_model.param_names])
+    bounds = bounds[~fixed]
     lp = map(uniform_prior, params, bounds)
 
     return sum(lp)
