@@ -34,7 +34,7 @@ def log_prior(params, sed_model, fixed):
 def log_post(params, x, y, yerr, sed_model, fixed, filts, filt_all):
 
     lprior = log_prior(params, sed_model, fixed)
-    if not np.ifinite(lprior):
+    if not np.isfinite(lprior):
         return -np.inf
     else:
         llike = log_like(params, x, y, yerr, sed_model, fixed, filts, filt_all)
