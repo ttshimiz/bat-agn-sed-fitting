@@ -80,8 +80,8 @@ def calc_model(waves, params, sed_model, fixed, filts, filt_all):
 
     func = filt_all.calc_mono_flux
 
-    model_fluxes = np.array([func(f, fwaves[f]*zcorr,
-                                  dummy(fwaves[f]*zcorr), zz) for f in filts])
+    model_fluxes = np.array([func(f, fwaves[f],
+                                  dummy(fwaves[f]/zcorr)) for f in filts])
 
     return model_fluxes
 
