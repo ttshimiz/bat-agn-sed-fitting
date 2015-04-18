@@ -109,7 +109,7 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
             u = model.param_errs[i, 1] - p
             s = r'%s$ = %.2f^{+%.2f}_{-%.2f}$' % (ln, p, u, l)
 
-            ax.text(0.95, 0.95-i*0.07, s, ha='right', va='top',
+            ax.text(0.97, 0.97-i*0.06, s, ha='right', va='top',
                     transform=ax.transAxes, fontsize=fs)
 
     if name is not None:
