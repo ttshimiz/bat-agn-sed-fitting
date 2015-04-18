@@ -107,7 +107,8 @@ class SEDBayesFitter(object):
     def set_nthreads(self, nt):
         self.threads = nt
 
-    def fit(self, model, x, y, yerr=None, filts=None, errs=(16, 84)):
+    def fit(self, model, x, y, yerr=None, filts=None,
+            best=np.median, errs=(16, 84)):
 
         mod = model.copy()
         fixed = np.array([mod.fixed[n] for n in mod.param_names])
@@ -135,7 +136,7 @@ class SEDBayesFitter(object):
         if self.threads > 1:
             mcmc.pool.close()
 
-        mod.parameters[~fixed] = np.median(mod.chain_nb, axis=0)
+        mod.parameters[~fixed] = best(mod.chain_nb, axis=0)
         mod.param_errs = np.zeros((len(mod.parameters), 2))
         mod.param_errs[~fixed] = np.percentile(mod.chain_nb, q=errs, axis=0).T
 
