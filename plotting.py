@@ -20,8 +20,9 @@ tex_names = {'mdust': r'$M_{dust}$',
              'wturn': r'$\lambda_{turn}$'}
 
 
-def plot_fit(waves, obs_flux, model, model_waves=np.arange(8, 1000),
-             obs_err=None, plot_mono_fluxes=False, filts=None,
+def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
+             obs_err=None, plot_components=False, comp_colors=None,
+             plot_mono_fluxes=False, filts=None,
              plot_fit_spread=False, nspread=1000,
              name=None, plot_params=False,
              seaborn_context='notebook'):
@@ -53,6 +54,16 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(8, 1000),
         model_2_5, model_97_5 = np.percentile(rand_sed, [2.5, 97.5], axis=0)
         ax.fill_between(model_waves, model_2_5, model_97_5, color=lt_blue,
                         alpha=0.35, label='_nolabel')
+
+    if plot_components:
+        ncomps = model.n_components
+        if comp_colors is None:
+            comp_colors = seaborn.color_palette('colorblind',
+                                                n_colors=ncomps+1)[1:]
+        comps = model.eval_comps(model_waves/(1+model.redshift))
+        for i in range(ncomps):
+            ax.loglog(model_waves, comps[i, :], ls='--',
+                      label=model.comp_names[i], color=comp_colors[i])
 
     if plot_mono_fluxes:
         dummy2 = model.copy()
