@@ -304,6 +304,10 @@ class GreybodyPowerlaw(Fittable1DModel):
         self.chain = None
         self.chain_nb = None
         self.param_errs = None
+
+        self.n_components = 2
+        self.comp_names = ['Greybody', 'Exp. Powerlaw']
+
         super(GreybodyPowerlaw, self).__init__(mdust, tdust, beta,
                                                pownorm, alpha, wturn)
 
@@ -365,6 +369,13 @@ class GreybodyPowerlaw(Fittable1DModel):
 
         return ((10**self.pownorm) * (x/self.wturn)**self.alpha *
                 np.exp(-(x/self.wturn)**2))
+
+    def eval_comps(self, x):
+
+        comp1 = self.eval_grey(x)
+        comp2 = self.eval_plaw(x)
+
+        return np.vstack([comp1, comp2])
 
     def set_kappa0(self, k0):
         """
