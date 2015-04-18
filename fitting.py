@@ -170,16 +170,13 @@ class Filters(object):
     def get_trans(self, f):
         return self.filter_trans[f]
 
-    def calc_mono_flux(self, filt, sed_waves, sed, redshift=0.0):
+    def calc_mono_flux(self, filt, sed_waves, sed):
         ft = self.filter_trans[filt]
         fw = self.filter_waves[filt]
 
-        rest_waves = fw/(1+redshift)
+        interp_sed = np.interp(fw, sed_waves, sed, left=0, right=0)
 
-        interp_sed = np.interp(rest_waves, sed_waves, sed,
-                               left=0, right=0)
-
-        integ_num = np.trapz(ft*interp_sed, x=c_micron/rest_waves)
-        integ_denom = np.trapz(ft, x=c_micron/rest_waves)
+        integ_num = np.trapz(ft*interp_sed, x=c_micron/fw)
+        integ_denom = np.trapz(ft, x=c_micron/fw)
 
         return integ_num/integ_denom
