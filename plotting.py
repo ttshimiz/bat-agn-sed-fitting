@@ -65,25 +65,42 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
             ax.loglog(model_waves, comps[i, :], ls='--',
                       label=model.comp_names[i], color=comp_colors[i])
 
+    undetected = np.isnan(obs_flux)
     if plot_mono_fluxes:
         dummy2 = model.copy()
         filters = Filters()
         fwaves = filters.filter_waves
+        filts = np.array(filts)[~undetected]
         zcorr = 1 + model.redshift
         mono_fluxes = np.array([filters.calc_mono_flux(f, fwaves[f],
                                 dummy2(fwaves[f]/zcorr)) for f in filts])
-        ax.plot(waves, mono_fluxes, marker='^', ls='None', color=red,
-                label='Model Fluxes')
+        ax.plot(waves[~undetected], mono_fluxes, marker='^', ls='None',
+                color=red, label='Model Fluxes')
+        if sum(undetected) > 0:
+            fluxes = np.hstack([mono_fluxes, obs_flux[~undetected],
+                                obs_err[undetected]])
+        else:
+            fluxes = np.hstack([mono_fluxes, obs_flux])
+    else:
+        if sum(undetected) > 0:
+            fluxes = np.hstack([obs_flux[~undetected],
+                                obs_err[undetected]])
+        else:
+            fluxes = obs_flux
 
     if obs_err is None:
-        ax.plot(waves, obs_flux, marker='o', ls='None', color='k',
-                label='Observed Fluxes')
+        ax.plot(waves[~undetected], obs_flux[~undetected], marker='o',
+                ls='None', color='k', label='Observed Fluxes')
     else:
-        ax.errorbar(waves, obs_flux, yerr=obs_err, marker='o', ls='None',
+        ax.errorbar(waves[~undetected], obs_flux[~undetected],
+                    yerr=obs_err[~undetected], marker='o', ls='None',
                     color='k', label='Observed Fluxes')
-
+        if sum(undetected) > 0:
+            ax.quiver(waves[undetected], obs_err[undetected],
+                      np.zeros(sum(undetected)),
+                      -0.025*np.ones(sum(undetected)),
+                      width=0.004, color='k')
     if plot_params:
-        i = 0
         fs = mpl.rcParams['legend.fontsize']
         for i, n in enumerate(model.param_names):
             ln = tex_names[n]
@@ -94,13 +111,12 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
 
             ax.text(0.95, 0.95-i*0.07, s, ha='right', va='top',
                     transform=ax.transAxes, fontsize=fs)
-            i += 1
 
     if name is not None:
         ax.set_title(name)
 
-    ax.set_xlim([8, 1000])
-    ax.set_ylim([10**(-0.5)*min(obs_flux), 10**(0.5)*max(obs_flux)])
+    ax.set_xlim([1, 1000])
+    ax.set_ylim([10**(-0.5)*min(fluxes), 10**(0.5)*max(fluxes)])
     ax.legend(loc='upper left')
     ax.set_xlabel('Wavelength [micron]')
     ax.set_ylabel('Flux Density [Jy]')
