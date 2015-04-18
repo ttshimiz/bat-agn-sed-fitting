@@ -8,7 +8,6 @@ Created on Fri Apr 17 21:18:03 2015
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
-import seaborn
 from fitting import Filters
 seaborn.set()
 
@@ -27,7 +26,8 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
              name=None, plot_params=False,
              seaborn_context='notebook'):
 
-    seaborn.set_context(seaborn_context)
+    import seaborn
+    seaborn.set(context=seabon_context)
     red = seaborn.xkcd_rgb['pale red']
     blue = seaborn.xkcd_rgb['denim blue']
     lt_blue = seaborn.xkcd_rgb['pastel blue']
@@ -120,5 +120,16 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
     ax.legend(loc='upper left')
     ax.set_xlabel('Wavelength [micron]')
     ax.set_ylabel('Flux Density [Jy]')
+
+    return fig
+
+
+def plot_triangle(model, quantiles=[0.16, 0.5, 0.84]):
+
+    import triangle
+    labels = [tex_names[n] for n in model.param_names]
+
+    fig = triangle.corner(model.chain_nb, quantiles=quantiles,
+                          labels=labels, verbose=False)
 
     return fig
