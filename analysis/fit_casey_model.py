@@ -8,6 +8,8 @@ Created on Sat Apr 18 16:10:19 2015
 import sys
 sys.path.append('../../bat-agn-sed-fitting')
 
+import matplotlib
+matplotlib.use('Agg')
 import numpy as np
 import plotting as bat_plot
 import fitting as bat_fit
@@ -15,8 +17,6 @@ import models as bat_model
 import pandas as pd
 from astropy.modeling import fitting as apy_fit
 import pickle
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # Upload the BAT fluxes for Herschel and WISE
