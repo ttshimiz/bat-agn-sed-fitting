@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 from fitting import Filters
-seaborn.set()
 
 tex_names = {'mdust': r'$M_{dust}$',
              'tdust': r'$T_{dust}$',
@@ -27,7 +26,7 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
              seaborn_context='notebook'):
 
     import seaborn
-    seaborn.set(context=seabon_context)
+    seaborn.set(context=seaborn_context)
     red = seaborn.xkcd_rgb['pale red']
     blue = seaborn.xkcd_rgb['denim blue']
     lt_blue = seaborn.xkcd_rgb['pastel blue']
