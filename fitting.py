@@ -76,7 +76,7 @@ def calc_model(waves, params, sed_model, fixed, filts, filt_all):
     dummy.parameters[~fixed] = params
     fwaves = filt_all.filter_waves
     zz = dummy.redshift
-    zcorr = 1 / (1 + zz)
+    zcorr = 1 + zz
 
     func = filt_all.calc_mono_flux
 
@@ -147,8 +147,8 @@ class Filters(object):
 
     def __init__(self):
 
-        fn = glob('./Filters/*.txt')
-        self.names = [x.split('/')[2].split('.')[0] for x in fn]
+        fn = glob('/Users/ttshimiz/Github/bat-agn-sed-fitting/Filters/*.txt')
+        self.names = [x.split('/')[-1].split('.')[0] for x in fn]
         self.filter_trans = {}
         self.filter_waves = {}
 
