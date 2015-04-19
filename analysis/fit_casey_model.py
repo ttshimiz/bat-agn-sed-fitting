@@ -81,12 +81,12 @@ for n in names_use:
     fig_fit.savefig('casey_bayes_results/all_free/sed_plots/' + n +
                      '_casey_bayes_all_free_sed_fit.png',
                      bbox_inches='tight')
-
+    plt.close(fig_fit)
     fig_triangle = bat_plot.plot_triangle(model_final)
     fig_triangle.savefig('casey_bayes_results/all_free/triangle_plots/' + n +
                           '_casey_bayes_all_free_triangle.png',
                           bbox_inches='tight')
-
+    plt.close(fig_triangle)
     fit_dict = {'name': n,
                 'flux': flux,
                 'flux_err': flux_err,
@@ -96,3 +96,4 @@ for n in names_use:
     pickle_file = open('casey_bayes_results/all_free/pickles/' + n +
                        '_casey_bayes_all_free.pickle', 'wb')
     pickle.dump(fit_dict, pickle_file)
+    pickle_file.close()
