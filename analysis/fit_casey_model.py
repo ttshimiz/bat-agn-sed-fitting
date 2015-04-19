@@ -15,6 +15,8 @@ import models as bat_model
 import pandas as pd
 from astropy.modeling import fitting as apy_fit
 import pickle
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # Upload the BAT fluxes for Herschel and WISE
