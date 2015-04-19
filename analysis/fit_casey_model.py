@@ -15,6 +15,7 @@ import models as bat_model
 import pandas as pd
 from astropy.modeling import fitting as apy_fit
 import pickle
+import matplotlib.pyplot as plt
 
 # Upload the BAT fluxes for Herschel and WISE
 herschel_data = pd.read_csv('../../bat-data/bat_herschel.csv', index_col=0,
@@ -40,6 +41,7 @@ lev_marq = apy_fit.LevMarLSQFitter()
 bayes = bat_fit.SEDBayesFitter()
 
 for n in names_use:
+    print 'Fitting: ', n
     src_sed = sed_use.loc[n][filt_use]
     flux = np.array(src_sed)
     src_err = sed_use.loc[n][filt_err]
@@ -73,20 +75,21 @@ for n in names_use:
 
     model_final = bayes.fit(model_init, waves, flux, yerr=flux_err,
                             filts=filt_use)
-
+    print 'Plotting the fit: ', n
     fig_fit = bat_plot.plot_fit(waves, flux, model_final, obs_err=flux_err,
                                 plot_components=True, plot_mono_fluxes=True,
                                 filts=filt_use, plot_fit_spread=True,
                                 name=n, plot_params=True)
     fig_fit.savefig('casey_bayes_results/all_free/sed_plots/' + n +
-                     '_casey_bayes_all_free_sed_fit.png',
-                     bbox_inches='tight')
+                    '_casey_bayes_all_free_sed_fit.png',
+                    bbox_inches='tight')
     plt.close(fig_fit)
     fig_triangle = bat_plot.plot_triangle(model_final)
     fig_triangle.savefig('casey_bayes_results/all_free/triangle_plots/' + n +
-                          '_casey_bayes_all_free_triangle.png',
-                          bbox_inches='tight')
+                         '_casey_bayes_all_free_triangle.png',
+                         bbox_inches='tight')
     plt.close(fig_triangle)
+    print 'Saving the fit: ', n
     fit_dict = {'name': n,
                 'flux': flux,
                 'flux_err': flux_err,
