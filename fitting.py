@@ -147,7 +147,7 @@ class Filters(object):
 
     def __init__(self):
 
-        fn = glob('/Users/ttshimiz/Github/bat-agn-sed-fitting/Filters/*.txt')
+        fn = glob('/ricci9nb/tshimizu/Github/bat-agn-sed-fitting/Filters/*.txt')
         self.names = [x.split('/')[-1].split('.')[0] for x in fn]
         self.filter_trans = {}
         self.filter_waves = {}
