@@ -1,0 +1,424 @@
+WARNING: AstropyDeprecationWarning: Config parameter 'default_cosmology' in section [astropy.cosmology.core] is deprecated. Use science state astropy.cosmology.core.default_cosmology instead. [astropy.utils.state]
+Fitting:  2MASXJ07595347+2323241
+Plotting the fit:  2MASXJ07595347+2323241
+Saving the fit:  2MASXJ07595347+2323241
+Fitting:  2MASXJ10402231-4625264
+Plotting the fit:  2MASXJ10402231-4625264
+Saving the fit:  2MASXJ10402231-4625264
+Fitting:  2MASXJ12005792+0648226
+Plotting the fit:  2MASXJ12005792+0648226
+Saving the fit:  2MASXJ12005792+0648226
+Fitting:  2MASXJ12313717-4758019
+Plotting the fit:  2MASXJ12313717-4758019
+Saving the fit:  2MASXJ12313717-4758019
+Fitting:  2MASXJ15115979-2119015
+Plotting the fit:  2MASXJ15115979-2119015
+Saving the fit:  2MASXJ15115979-2119015
+Fitting:  2MASXJ19373299-0613046
+Plotting the fit:  2MASXJ19373299-0613046
+Saving the fit:  2MASXJ19373299-0613046
+Fitting:  2MASXJ21355399+4728217
+Plotting the fit:  2MASXJ21355399+4728217
+Saving the fit:  2MASXJ21355399+4728217
+Fitting:  2MASXJ23272195+1524375
+Plotting the fit:  2MASXJ23272195+1524375
+Saving the fit:  2MASXJ23272195+1524375
+Fitting:  2MFGC02280
+Plotting the fit:  2MFGC02280
+Saving the fit:  2MFGC02280
+Fitting:  3C111.0
+Plotting the fit:  3C111.0
+Saving the fit:  3C111.0
+Fitting:  3C120
+Plotting the fit:  3C120
+Saving the fit:  3C120
+Fitting:  6dFJ0626586-370559
+Plotting the fit:  6dFJ0626586-370559
+Saving the fit:  6dFJ0626586-370559
+Fitting:  Ark120
+Plotting the fit:  Ark120
+Saving the fit:  Ark120
+Fitting:  CenA
+Plotting the fit:  CenA
+Saving the fit:  CenA
+Fitting:  CGCG341-006
+Plotting the fit:  CGCG341-006
+Saving the fit:  CGCG341-006
+Fitting:  CGCG468-002NED01
+Plotting the fit:  CGCG468-002NED01
+Saving the fit:  CGCG468-002NED01
+Fitting:  ESO005-G004
+Plotting the fit:  ESO005-G004
+Saving the fit:  ESO005-G004
+Fitting:  ESO033-G002
+Plotting the fit:  ESO033-G002
+Saving the fit:  ESO033-G002
+Fitting:  ESO137-34
+Plotting the fit:  ESO137-34
+Saving the fit:  ESO137-34
+Fitting:  ESO139-G012
+Plotting the fit:  ESO139-G012
+Saving the fit:  ESO139-G012
+Fitting:  ESO157-G023
+Plotting the fit:  ESO157-G023
+Saving the fit:  ESO157-G023
+Fitting:  ESO197-G027
+Plotting the fit:  ESO197-G027
+Saving the fit:  ESO197-G027
+Fitting:  ESO244-IG030
+Plotting the fit:  ESO244-IG030
+Saving the fit:  ESO244-IG030
+Fitting:  ESO297-018
+Plotting the fit:  ESO297-018
+Saving the fit:  ESO297-018
+Fitting:  ESO323-077
+Plotting the fit:  ESO323-077
+Saving the fit:  ESO323-077
+Fitting:  ESO362-18
+Plotting the fit:  ESO362-18
+Saving the fit:  ESO362-18
+Fitting:  ESO374-G044
+Plotting the fit:  ESO374-G044
+Saving the fit:  ESO374-G044
+Fitting:  ESO399-20
+Plotting the fit:  ESO399-20
+Saving the fit:  ESO399-20
+Fitting:  ESO439-G009
+Plotting the fit:  ESO439-G009
+Saving the fit:  ESO439-G009
+Fitting:  ESO490-IG026
+Plotting the fit:  ESO490-IG026
+Saving the fit:  ESO490-IG026
+Fitting:  ESO499-G041
+Plotting the fit:  ESO499-G041
+Saving the fit:  ESO499-G041
+Fitting:  ESO509-IG066NED01
+Plotting the fit:  ESO509-IG066NED01
+Saving the fit:  ESO509-IG066NED01
+Fitting:  ESO511-G030
+Plotting the fit:  ESO511-G030
+Saving the fit:  ESO511-G030
+Fitting:  ESO533-G050
+Plotting the fit:  ESO533-G050
+Saving the fit:  ESO533-G050
+Fitting:  ESO548-G081
+Plotting the fit:  ESO548-G081
+Saving the fit:  ESO548-G081
+Fitting:  ESO549-G049
+Plotting the fit:  ESO549-G049
+Saving the fit:  ESO549-G049
+Fitting:  ESO565-G019
+Plotting the fit:  ESO565-G019
+Saving the fit:  ESO565-G019
+Fitting:  Fairall272
+Plotting the fit:  Fairall272
+Saving the fit:  Fairall272
+Fitting:  Fairall49
+Plotting the fit:  Fairall49
+Saving the fit:  Fairall49
+Fitting:  HB890241+622
+Plotting the fit:  HB890241+622
+Saving the fit:  HB890241+622
+Fitting:  IC0486
+Plotting the fit:  IC0486
+Saving the fit:  IC0486
+Fitting:  IC1657
+Plotting the fit:  IC1657
+Saving the fit:  IC1657
+Fitting:  IC1816
+Plotting the fit:  IC1816
+Saving the fit:  IC1816
+Fitting:  IC2461
+Plotting the fit:  IC2461
+Saving the fit:  IC2461
+Fitting:  IC2637
+Plotting the fit:  IC2637
+Saving the fit:  IC2637
+Fitting:  IC4518A
+Plotting the fit:  IC4518A
+Saving the fit:  IC4518A
+Fitting:  IC5063
+Plotting the fit:  IC5063
+Saving the fit:  IC5063
+Fitting:  LEDA170194
+Plotting the fit:  LEDA170194
+Saving the fit:  LEDA170194
+Fitting:  M106
+Plotting the fit:  M106
+Saving the fit:  M106
+Fitting:  MCG-01-05-047
+Plotting the fit:  MCG-01-05-047
+Saving the fit:  MCG-01-05-047
+Fitting:  MCG-01-24-012
+Plotting the fit:  MCG-01-24-012
+Saving the fit:  MCG-01-24-012
+Fitting:  MCG-01-30-041
+Plotting the fit:  MCG-01-30-041
+Saving the fit:  MCG-01-30-041
+Fitting:  MCG-01-33-063
+Plotting the fit:  MCG-01-33-063
+Saving the fit:  MCG-01-33-063
+Fitting:  MCG-02-12-050
+Plotting the fit:  MCG-02-12-050
+Saving the fit:  MCG-02-12-050
+Fitting:  MCG+00-09-042
+Plotting the fit:  MCG+00-09-042
+Saving the fit:  MCG+00-09-042
+Fitting:  MCG+02-21-013
+Plotting the fit:  MCG+02-21-013
+Saving the fit:  MCG+02-21-013
+Fitting:  MCG+02-57-002
+Plotting the fit:  MCG+02-57-002
+Saving the fit:  MCG+02-57-002
+Fitting:  MCG+04-22-042
+Plotting the fit:  MCG+04-22-042
+Saving the fit:  MCG+04-22-042
+Fitting:  MCG+04-48-002
+Plotting the fit:  MCG+04-48-002
+Saving the fit:  MCG+04-48-002
+Fitting:  MCG+05-03-013
+Plotting the fit:  MCG+05-03-013
+Saving the fit:  MCG+05-03-013
+Fitting:  MCG+06-16-028
+Plotting the fit:  MCG+06-16-028
+Saving the fit:  MCG+06-16-028
+Fitting:  MCG+06-24-008
+Plotting the fit:  MCG+06-24-008
+Saving the fit:  MCG+06-24-008
+Fitting:  MCG+08-11-011
+Plotting the fit:  MCG+08-11-011
+Saving the fit:  MCG+08-11-011
+Fitting:  MCG+12-10-067
+Plotting the fit:  MCG+12-10-067
+Saving the fit:  MCG+12-10-067
+Fitting:  Mrk10
+Plotting the fit:  Mrk10
+Saving the fit:  Mrk10
+Fitting:  Mrk1018
+Plotting the fit:  Mrk1018
+Saving the fit:  Mrk1018
+Fitting:  Mrk1392
+Plotting the fit:  Mrk1392
+Saving the fit:  Mrk1392
+Fitting:  Mrk18
+Plotting the fit:  Mrk18
+Saving the fit:  Mrk18
+Fitting:  Mrk348
+Plotting the fit:  Mrk348
+Saving the fit:  Mrk348
+Fitting:  Mrk590
+Plotting the fit:  Mrk590
+Saving the fit:  Mrk590
+Fitting:  Mrk618
+Plotting the fit:  Mrk618
+Saving the fit:  Mrk618
+Fitting:  Mrk739E
+Plotting the fit:  Mrk739E
+Saving the fit:  Mrk739E
+Fitting:  Mrk766
+Plotting the fit:  Mrk766
+Saving the fit:  Mrk766
+Fitting:  Mrk79
+Plotting the fit:  Mrk79
+Saving the fit:  Mrk79
+Fitting:  Mrk817
+Plotting the fit:  Mrk817
+Saving the fit:  Mrk817
+Fitting:  NGC1106
+Plotting the fit:  NGC1106
+Saving the fit:  NGC1106
+Fitting:  NGC1365
+Plotting the fit:  NGC1365
+Saving the fit:  NGC1365
+Fitting:  NGC2655
+Plotting the fit:  NGC2655
+Saving the fit:  NGC2655
+Fitting:  NGC2885
+Plotting the fit:  NGC2885
+Saving the fit:  NGC2885
+Fitting:  NGC2992
+Plotting the fit:  NGC2992
+Saving the fit:  NGC2992
+Fitting:  NGC3035
+Plotting the fit:  NGC3035
+Saving the fit:  NGC3035
+Fitting:  NGC3079
+Plotting the fit:  NGC3079
+Saving the fit:  NGC3079
+Fitting:  NGC3081
+Plotting the fit:  NGC3081
+Saving the fit:  NGC3081
+Fitting:  NGC3227
+Plotting the fit:  NGC3227
+Saving the fit:  NGC3227
+Fitting:  NGC3281
+Plotting the fit:  NGC3281
+Saving the fit:  NGC3281
+Fitting:  NGC3393
+Plotting the fit:  NGC3393
+Saving the fit:  NGC3393
+Fitting:  NGC3431
+Plotting the fit:  NGC3431
+Saving the fit:  NGC3431
+Fitting:  NGC3718
+Plotting the fit:  NGC3718
+Saving the fit:  NGC3718
+Fitting:  NGC3783
+Plotting the fit:  NGC3783
+Saving the fit:  NGC3783
+Fitting:  NGC3786
+Plotting the fit:  NGC3786
+Saving the fit:  NGC3786
+Fitting:  NGC4051
+Plotting the fit:  NGC4051
+Saving the fit:  NGC4051
+Fitting:  NGC4102
+Plotting the fit:  NGC4102
+Saving the fit:  NGC4102
+Fitting:  NGC4138
+Plotting the fit:  NGC4138
+Saving the fit:  NGC4138
+Fitting:  NGC4151
+Plotting the fit:  NGC4151
+Saving the fit:  NGC4151
+Fitting:  NGC4180
+Plotting the fit:  NGC4180
+Saving the fit:  NGC4180
+Fitting:  NGC4235
+Plotting the fit:  NGC4235
+Saving the fit:  NGC4235
+Fitting:  NGC424
+Plotting the fit:  NGC424
+Saving the fit:  NGC424
+Fitting:  NGC4388
+Plotting the fit:  NGC4388
+Saving the fit:  NGC4388
+Fitting:  NGC4507
+Plotting the fit:  NGC4507
+Saving the fit:  NGC4507
+Fitting:  NGC4619
+Plotting the fit:  NGC4619
+Saving the fit:  NGC4619
+Fitting:  NGC4748
+Plotting the fit:  NGC4748
+Saving the fit:  NGC4748
+Fitting:  NGC4939
+Plotting the fit:  NGC4939
+Saving the fit:  NGC4939
+Fitting:  NGC4941
+Plotting the fit:  NGC4941
+Saving the fit:  NGC4941
+Fitting:  NGC4992
+Plotting the fit:  NGC4992
+Saving the fit:  NGC4992
+Fitting:  NGC5033
+Plotting the fit:  NGC5033
+Saving the fit:  NGC5033
+Fitting:  NGC5106
+Plotting the fit:  NGC5106
+Saving the fit:  NGC5106
+Fitting:  NGC513
+Plotting the fit:  NGC513
+Saving the fit:  NGC513
+Fitting:  NGC5231
+Plotting the fit:  NGC5231
+Saving the fit:  NGC5231
+Fitting:  NGC5290
+Plotting the fit:  NGC5290
+Saving the fit:  NGC5290
+Fitting:  NGC5506
+Plotting the fit:  NGC5506
+Saving the fit:  NGC5506
+Fitting:  NGC5610
+Plotting the fit:  NGC5610
+Saving the fit:  NGC5610
+Fitting:  NGC5674
+Plotting the fit:  NGC5674
+Saving the fit:  NGC5674
+Fitting:  NGC5728
+Plotting the fit:  NGC5728
+Saving the fit:  NGC5728
+Fitting:  NGC5899
+Plotting the fit:  NGC5899
+Saving the fit:  NGC5899
+Fitting:  NGC5995
+Plotting the fit:  NGC5995
+Saving the fit:  NGC5995
+Fitting:  NGC6221
+Plotting the fit:  NGC6221
+Saving the fit:  NGC6221
+Fitting:  NGC6240
+Plotting the fit:  NGC6240
+Saving the fit:  NGC6240
+Fitting:  NGC6300
+Plotting the fit:  NGC6300
+Saving the fit:  NGC6300
+Fitting:  NGC6814
+Plotting the fit:  NGC6814
+Saving the fit:  NGC6814
+Fitting:  NGC6860
+Plotting the fit:  NGC6860
+Saving the fit:  NGC6860
+Fitting:  NGC7172
+Plotting the fit:  NGC7172
+Saving the fit:  NGC7172
+Fitting:  NGC7213
+Plotting the fit:  NGC7213
+Saving the fit:  NGC7213
+Fitting:  NGC7465
+Plotting the fit:  NGC7465
+Saving the fit:  NGC7465
+Fitting:  NGC7469
+Plotting the fit:  NGC7469
+Saving the fit:  NGC7469
+Fitting:  NGC7479
+Plotting the fit:  NGC7479
+Saving the fit:  NGC7479
+Fitting:  NGC7582
+Plotting the fit:  NGC7582
+Saving the fit:  NGC7582
+Fitting:  NGC7603
+Plotting the fit:  NGC7603
+Saving the fit:  NGC7603
+Fitting:  NGC7679
+Plotting the fit:  NGC7679
+Saving the fit:  NGC7679
+Fitting:  NGC931
+Plotting the fit:  NGC931
+Saving the fit:  NGC931
+Fitting:  NGC985
+Plotting the fit:  NGC985
+Saving the fit:  NGC985
+Fitting:  PICTORA
+Plotting the fit:  PICTORA
+Saving the fit:  PICTORA
+Fitting:  PKS2331-240
+Plotting the fit:  PKS2331-240
+Saving the fit:  PKS2331-240
+Fitting:  UGC01479
+Plotting the fit:  UGC01479
+Saving the fit:  UGC01479
+Fitting:  UGC03478
+Plotting the fit:  UGC03478
+Saving the fit:  UGC03478
+Fitting:  UGC03995A
+Plotting the fit:  UGC03995A
+Saving the fit:  UGC03995A
+Fitting:  UGC05881
+Plotting the fit:  UGC05881
+Saving the fit:  UGC05881
+Fitting:  UGC07064
+Plotting the fit:  UGC07064
+Saving the fit:  UGC07064
+Fitting:  UGC08327NED02
+Plotting the fit:  UGC08327NED02
+Saving the fit:  UGC08327NED02
+Fitting:  UGC12237
+Plotting the fit:  UGC12237
+Saving the fit:  UGC12237
+Fitting:  UGC12741
+Plotting the fit:  UGC12741
+Saving the fit:  UGC12741
+Fitting:  VIIZw073
+Plotting the fit:  VIIZw073
+Saving the fit:  VIIZw073
