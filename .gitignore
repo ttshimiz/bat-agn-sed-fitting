@@ -1,5 +1,5 @@
 *.pyc
 **/*.png
 **/*.pickle
-**/.ipynb_checkpoints/
+**/*checkpoints*
 
