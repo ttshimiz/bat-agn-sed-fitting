@@ -133,7 +133,7 @@ class Greybody(SEDModel):
         """
 
         self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
-        self.nu_norm = (c.c.to(u.micron/u.s)/lnorm).value  # Convert to Hz
+        self.nu_norm = (c_micron/lnorm)  # Convert to Hz
 
 
 class TwoTempGreybody(SEDModel):
