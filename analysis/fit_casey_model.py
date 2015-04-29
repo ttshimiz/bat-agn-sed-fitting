@@ -25,7 +25,7 @@ herschel_data = pd.read_csv('../../bat-data/bat_herschel.csv', index_col=0,
 wise_data = pd.read_csv('../../bat-data/bat_wise.csv', index_col=0,
                         usecols=[0, 1, 2, 4, 5, 7, 8, 10, 11], na_values=0)
 
-sed = herschel_data.join(wise_data)
+sed = herschel_data.join(wise_data[['W3', 'W3_err', 'W4', 'W4_err']])
 
 # Upload info on BAT AGN for redshift and luminosity distance
 bat_info = pd.read_csv('../../bat-data/bat_info.csv', index_col=0)
@@ -34,13 +34,21 @@ filt_use = ['W3', 'W4', 'PACS70', 'PACS160', 'PSW', 'PMW', 'PLW']
 filt_err = [s+'_err' for s in filt_use]
 waves = np.array([12., 22., 70., 160., 250., 350., 500.])
 
-sed_use = sed.dropna(how='any')
+# Uncomment to fit sources with detections at all wavelengths
+# sed_use = sed.dropna(how='any')
+
+# Uncomment to fit sources with only N undetected points.
+# Change the integer on the right side of '==' to N.
+sed_use = sed[np.sum(np.isnan(sed.values), axis=1) == 1]
 
 names_use = sed_use.index
 
-base_model = bat_model.GreybodyPowerlaw(0.0, 25., 2.0, 0.0, 2.0, 30.0)
+base_model = bat_model.GreybodyPowerlaw(0.0, 50., 2.0, 0.0, 2.0, 30.0)
 lev_marq = apy_fit.LevMarLSQFitter()
 bayes = bat_fit.SEDBayesFitter()
+
+# Fix parameters
+base_model.wturn.fixed = True
 
 for n in names_use:
     print 'Fitting: ', n
@@ -72,7 +80,7 @@ for n in names_use:
     model_init = lev_marq(model_ml, waves, flux, weights=1/flux_err,
                           maxiter=1000)
 
-    model_init.wturn.fixed = False
+    # model_init.wturn.fixed = False
     model_init.beta.fixed = False
 
     model_final = bayes.fit(model_init, waves, flux, yerr=flux_err,
@@ -82,13 +90,13 @@ for n in names_use:
                                 plot_components=True, plot_mono_fluxes=True,
                                 filts=filt_use, plot_fit_spread=True,
                                 name=n, plot_params=True)
-    fig_fit.savefig('casey_bayes_results/all_free/sed_plots/' + n +
-                    '_casey_bayes_all_free_sed_fit.png',
+    fig_fit.savefig('casey_bayes_results/wturn_fixed50/sed_plots/' + n +
+                    '_casey_bayes_wturn_fixed50_sed_fit.png',
                     bbox_inches='tight')
     plt.close(fig_fit)
     fig_triangle = bat_plot.plot_triangle(model_final)
-    fig_triangle.savefig('casey_bayes_results/all_free/triangle_plots/' + n +
-                         '_casey_bayes_all_free_triangle.png',
+    fig_triangle.savefig('casey_bayes_results/wturn_fixed50/triangle_plots/' + n +
+                         '_casey_bayes_wturn_fixed50_triangle.png',
                          bbox_inches='tight')
     plt.close(fig_triangle)
     print 'Saving the fit: ', n
@@ -98,7 +106,7 @@ for n in names_use:
                 'best_fit_model': model_final,
                 'filters': filt_use,
                 'waves': waves}
-    pickle_file = open('casey_bayes_results/all_free/pickles/' + n +
-                       '_casey_bayes_all_free.pickle', 'wb')
+    pickle_file = open('casey_bayes_results/wturn_fixed50/pickles/' + n +
+                       '_casey_bayes_wturn_fixed50.pickle', 'wb')
     pickle.dump(fit_dict, pickle_file)
     pickle_file.close()
