@@ -54,9 +54,14 @@ for n in names_use:
     print 'Fitting: ', n
     src_sed = sed_use.loc[n][filt_use]
     flux = np.array(src_sed)
+    flux_detected = np.isfinite(flux)
+    flux_use = flux[flux_detected]
     src_err = sed_use.loc[n][filt_err]
     flux_err = np.array(src_err)
-
+    flux_err_use = flux_err[flux_detected]
+	filt_detected = filt_use[flux_detected]
+	waves_use = waves[flux_detected]
+	
     src_z = bat_info.loc[n]['Redshift']
     src_lumD = bat_info.loc[n]['Dist_[Mpc]']
 
@@ -82,9 +87,9 @@ for n in names_use:
 
     # model_init.wturn.fixed = False
     model_init.beta.fixed = False
-
-    model_final = bayes.fit(model_init, waves, flux, yerr=flux_err,
-                            filts=filt_use)
+    
+    model_final = bayes.fit(model_init, waves_use, flux_use, yerr=flux_err_use,
+                            filts=filt_detected)
     print 'Plotting the fit: ', n
     fig_fit = bat_plot.plot_fit(waves, flux, model_final, obs_err=flux_err,
                                 plot_components=True, plot_mono_fluxes=True,
