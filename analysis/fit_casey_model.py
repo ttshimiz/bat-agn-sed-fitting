@@ -59,8 +59,8 @@ for n in names_use:
     src_err = sed_use.loc[n][filt_err]
     flux_err = np.array(src_err)
     flux_err_use = flux_err[flux_detected]
-	filt_detected = filt_use[flux_detected]
-	waves_use = waves[flux_detected]
+    filt_detected = filt_use[flux_detected]
+    waves_use = waves[flux_detected]
 	
     src_z = bat_info.loc[n]['Redshift']
     src_lumD = bat_info.loc[n]['Dist_[Mpc]']
