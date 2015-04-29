@@ -126,7 +126,8 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
 def plot_triangle(model, quantiles=[0.16, 0.5, 0.84]):
 
     import triangle
-    labels = [tex_names[n] for n in model.param_names]
+    fixed  = np.array([model.fixed[n] for n in model.param_names])
+    labels = [tex_names[n] for n in np.array(model.param_names)[~fixed]]
 
     fig = triangle.corner(model.chain_nb, quantiles=quantiles,
                           labels=labels, verbose=False)
