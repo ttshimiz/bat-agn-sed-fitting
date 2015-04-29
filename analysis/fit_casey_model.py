@@ -45,7 +45,7 @@ names_use = sed_use.index
 
 base_model = bat_model.GreybodyPowerlaw(0.0, 50., 2.0, 0.0, 2.0, 30.0)
 lev_marq = apy_fit.LevMarLSQFitter()
-bayes = bat_fit.SEDBayesFitter()
+bayes = bat_fit.SEDBayesFitter(threads=8)
 
 # Fix parameters
 base_model.wturn.fixed = True
