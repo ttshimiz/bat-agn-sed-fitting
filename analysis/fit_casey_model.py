@@ -43,7 +43,7 @@ sed_use = sed[np.sum(np.isnan(sed.values), axis=1) == 1]
 
 names_use = sed_use.index
 
-base_model = bat_model.GreybodyPowerlaw(0.0, 50., 2.0, 0.0, 2.0, 30.0)
+base_model = bat_model.GreybodyPowerlaw(0.0, 25., 2.0, 0.0, 2.0, 50.0)
 lev_marq = apy_fit.LevMarLSQFitter()
 bayes = bat_fit.SEDBayesFitter(threads=8)
 
