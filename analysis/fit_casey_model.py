@@ -30,8 +30,8 @@ sed = herschel_data.join(wise_data[['W3', 'W3_err', 'W4', 'W4_err']])
 # Upload info on BAT AGN for redshift and luminosity distance
 bat_info = pd.read_csv('../../bat-data/bat_info.csv', index_col=0)
 
-filt_use = ['W3', 'W4', 'PACS70', 'PACS160', 'PSW', 'PMW', 'PLW']
-filt_err = [s+'_err' for s in filt_use]
+filt_use = np.array(['W3', 'W4', 'PACS70', 'PACS160', 'PSW', 'PMW', 'PLW'])
+filt_err = np.array([s+'_err' for s in filt_use])
 waves = np.array([12., 22., 70., 160., 250., 350., 500.])
 
 # Uncomment to fit sources with detections at all wavelengths
