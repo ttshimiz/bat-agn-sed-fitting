@@ -102,7 +102,7 @@ class Greybody(Fittable1DModel):
 		self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
 		self.nu_norm = (c_micron/lnorm)	 # Convert to Hz
 	
-		def set_lumD(self, ld):
+	def set_lumD(self, ld):
 		"""
 		Method to change the luminosity distance.
 		"""
@@ -256,7 +256,7 @@ class TwoTempGreybody(Fittable1DModel):
 		self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
 		self.nu_norm = (c.c.to(u.micron/u.s)/lnorm).value  # Convert to Hz
 
-		def set_lumD(self, ld):
+	def set_lumD(self, ld):
 		"""
 		Method to change the luminosity distance.
 		"""
