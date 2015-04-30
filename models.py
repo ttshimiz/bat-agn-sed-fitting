@@ -493,8 +493,7 @@ class Dale2014(object):
 				for w in range(len(x)):
 					sed = self.get_sed(self.alpha_use[a], self.fracAGN[f])
 					model_fluxes[w] = filters.calc_mono_flux(filts[w],
-															 self.waves, sed,
-															 self.redshift)
+															 self.waves, sed)
 				out = opt.leastsq(errfunc, 1, args=(y, model_fluxes, yerr))
 
 				self.norms[a, f] = out[0][0]
@@ -522,7 +521,7 @@ class Dale2014(object):
 		return sed
 
 	def calc_luminosity(self, alph, fa, norm=1.0, low=8., high=1000.):
-		sed = self.get_sed(alph, fa)
+		sed = self.get_sed(alph, fa, norm=norm)
 		waves = self.waves
 		freq = c_micron/waves
 

@@ -11,6 +11,8 @@ import astropy.constants as c
 import astropy.units as u
 from glob import glob
 import os
+
+# Directory where the module lives
 direct = os.path.dirname(os.path.abspath(__file__))
 
 # CONSTANTS
@@ -74,13 +76,18 @@ def calc_model(waves, params, sed_model, fixed, filts, filt_all):
 
     # Dummy model
     dummy = sed_model.copy()
+    
+    # Get the current parameters
     dummy.parameters[~fixed] = params
+    
+    # Get the wavelengths for all of the filters
     fwaves = filt_all.filter_waves
+    
+    # Redshift correction
     zz = dummy.redshift
     zcorr = 1 + zz
 
     func = filt_all.calc_mono_flux
-
     model_fluxes = np.array([func(f, fwaves[f],
                                   dummy(fwaves[f]/zcorr)) for f in filts])
 
