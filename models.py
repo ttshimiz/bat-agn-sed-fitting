@@ -22,6 +22,10 @@ import astropy.constants as const
 import numpy as np
 from scipy import optimize as opt
 from fitting import Filters
+import os
+
+# Directory where the module lives
+direct = os.path.dirname(os.path.abspath(__file__))
 
 # Global constants
 c_micron = const.c.to(u.micron/u.s).value
@@ -457,7 +461,7 @@ class Dale2014(object):
 
 		self.alpha = np.arange(0.0625, 4.0625, 0.0625)
 		self.fracAGN = np.arange(0, 1.05, 0.05)
-		self.waves = np.loadtxt('./Dale14/spectra/spectra.0.00AGN.dat',
+		self.waves = np.loadtxt(direct+'/Dale14/spectra/spectra.0.00AGN.dat',
 								usecols=[0])
 
 		self.models = np.zeros((len(self.alpha),
@@ -466,7 +470,7 @@ class Dale2014(object):
 
 		for i in range(len(self.fracAGN)):
 			fn = 'spectra.{0:0.2f}AGN.dat'.format(self.fracAGN[i])
-			m = np.loadtxt('./Dale14/spectra/'+fn).T
+			m = np.loadtxt(direct+'/Dale14/spectra/'+fn).T
 			self.models[:, :, i] = m[1:, :]+44 - np.log10(c_micron/self.waves)
 
 	def set_lumD(self, ld):
@@ -566,8 +570,8 @@ class DecompIR(object):
 		self.host_names = ['SB1', 'SB2', 'SB3', 'SB4', 'SB5']
 		self.agn_names = ['Mean', 'HiLum', 'LoLum']
 		
-		self.waves = np.loadtxt('./DecompIR/templates.txt', usecols=[0])
-		models = np.loadtxt('./DecompIR/templates.txt', usecols=[1, 2, 3, 4, 5, 6, 7, 8])
+		self.waves = np.loadtxt(direct+'/DecompIR/templates.txt', usecols=[0])
+		models = np.loadtxt(direct+'/DecompIR/templates.txt', usecols=[1, 2, 3, 4, 5, 6, 7, 8])
 		self.host_models = {'SB1': models[:, 3],
 							'SB2': models[:, 4],
 							'SB3': models[:, 5],
