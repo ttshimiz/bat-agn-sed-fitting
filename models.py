@@ -550,7 +550,7 @@ class Dale2014(object):
 		waves = self.waves
 		freq = c_micron/waves
 
-		flux_density = norm*sed/1e23
+		flux_density = sed/1e23
 		integral = -np.trapz(flux_density, freq)
 		lum = (4*np.pi)*(self.lumD_cm)**2*integral/const.L_sun.cgs.value
 
@@ -643,7 +643,7 @@ class DecompIR(object):
 		self.best_fit['host_name'] = self.host_use.keys()[indmin]
 		self.best_fit['agn_name'] = self.agn_use_name
 		self.best_fit['norms'] = self.norms[indmin]
-		self.best_fit['total_sed'] = self.get_sed(self.best_fit['agn_name'],
+		self.best_fit['sed'] = self.get_sed(self.best_fit['agn_name'],
 											self.best_fit['host_name'],
 											self.best_fit['norms'])
 		self.best_fit['agn_sed'] = 10**self.best_fit['norms'][0]*self.agn_use
