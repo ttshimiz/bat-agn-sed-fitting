@@ -523,7 +523,7 @@ class Dale2014(object):
 					sed = self.get_sed(self.alpha_use[a], self.fracAGN[f])
 					model_fluxes[w] = filters.calc_mono_flux(filts[w],
 															 self.waves*zcorr, sed)
-				out = opt.leastsq(errfunc, 1, args=(y, model_fluxes, yerr))
+				out = opt.leastsq(errfunc, 1, args=(y, model_fluxes, yerr), maxfev=1000)
 
 				self.norms[a, f] = out[0][0]
 				self.chi_sq[a, f] = np.sum(errfunc(self.norms[a, f], y,
@@ -633,8 +633,8 @@ class DecompIR(object):
 				host_model_fluxes[w] = filters.calc_mono_flux(filts[w],
 				                                              self.waves*zcorr, host_sed)
 			out = opt.leastsq(errfunc, [0, 0], args=(y, agn_model_fluxes,
-			                                         host_model_fluxes,
-			                                         yerr))
+			                                         host_model_fluxes,yerr), 
+			                   maxfev=1000)
 
 			self.norms[h, 0] = out[0][0]
 			self.norms[h, 1] = out[0][1]
