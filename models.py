@@ -38,41 +38,8 @@ cosmo = apy_cosmo.FlatLambdaCDM(H0=70., Om0=0.3)
 filters = Filters()
 
 
-# Base SED Model class
-class SEDModel(Fittable1DModel):
-
-	def set_lumD(self, ld):
-		"""
-		Method to change the luminosity distance.
-		"""
-		if ld is None:
-			self.lumD = cosmo.luminosity_distance(self.redshift).value
-			self.lumD_cm = cosmo.luminosity_distance(self.redshift).cgs.value
-		else:
-			self.lumD = ld	# Attach units to luminosity distance
-			self.lumD_cm = (ld*u.Mpc).cgs.value	 # Convert to cm
-
-	def set_redshift(self, zz):
-		"""
-		Method to change the redshift.
-		"""
-
-		self.redshift = zz
-
-	def calc_luminosity(self, lower=8.0, upper=1000.0):
-
-		waves = np.arange(lower, upper, 0.01)
-		freq = c_micron/waves
-
-		flux_density = self(waves)/1e23
-		integral = -np.trapz(flux_density, freq)
-		lum = (4*np.pi)*(self.lumD_cm)**2*integral/const.L_sun.cgs.value
-
-		return lum
-
-
 # Single Temperature Greybody
-class Greybody(SEDModel):
+class Greybody(Fittable1DModel):
 	"""
 	Single temperature greybody.
 	Free parameters include dust mass, emissivity, and dust temperature.
@@ -134,9 +101,38 @@ class Greybody(SEDModel):
 
 		self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
 		self.nu_norm = (c_micron/lnorm)	 # Convert to Hz
+	
+		def set_lumD(self, ld):
+		"""
+		Method to change the luminosity distance.
+		"""
+		if ld is None:
+			self.lumD = cosmo.luminosity_distance(self.redshift).value
+			self.lumD_cm = cosmo.luminosity_distance(self.redshift).cgs.value
+		else:
+			self.lumD = ld	# Attach units to luminosity distance
+			self.lumD_cm = (ld*u.Mpc).cgs.value	 # Convert to cm
+
+	def set_redshift(self, zz):
+		"""
+		Method to change the redshift.
+		"""
+
+		self.redshift = zz
+
+	def calc_luminosity(self, lower=8.0, upper=1000.0):
+
+		waves = np.arange(lower, upper, 0.01)
+		freq = c_micron/waves
+
+		flux_density = self(waves)/1e23
+		integral = -np.trapz(flux_density, freq)
+		lum = (4*np.pi)*(self.lumD_cm)**2*integral/const.L_sun.cgs.value
+
+		return lum
 
 
-class TwoTempGreybody(SEDModel):
+class TwoTempGreybody(Fittable1DModel):
 	"""
 	Two temperature greybody model with a warm and cold component.
 
@@ -260,6 +256,34 @@ class TwoTempGreybody(SEDModel):
 		self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
 		self.nu_norm = (c.c.to(u.micron/u.s)/lnorm).value  # Convert to Hz
 
+		def set_lumD(self, ld):
+		"""
+		Method to change the luminosity distance.
+		"""
+		if ld is None:
+			self.lumD = cosmo.luminosity_distance(self.redshift).value
+			self.lumD_cm = cosmo.luminosity_distance(self.redshift).cgs.value
+		else:
+			self.lumD = ld	# Attach units to luminosity distance
+			self.lumD_cm = (ld*u.Mpc).cgs.value	 # Convert to cm
+
+	def set_redshift(self, zz):
+		"""
+		Method to change the redshift.
+		"""
+
+		self.redshift = zz
+
+	def calc_luminosity(self, lower=8.0, upper=1000.0):
+
+		waves = np.arange(lower, upper, 0.01)
+		freq = c_micron/waves
+
+		flux_density = self(waves)/1e23
+		integral = -np.trapz(flux_density, freq)
+		lum = (4*np.pi)*(self.lumD_cm)**2*integral/const.L_sun.cgs.value
+
+		return lum
 
 class GreybodyPowerlaw(Fittable1DModel):
 	"""
