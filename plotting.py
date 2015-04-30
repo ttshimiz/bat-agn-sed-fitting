@@ -133,3 +133,79 @@ def plot_triangle(model, quantiles=[0.16, 0.5, 0.84]):
                           labels=labels, verbose=False)
 
     return fig
+
+
+def plot_fit_dale14(waves, obs_flux, model, obs_err=None,
+                    plot_mono_fluxes=False, filts=None,
+                    name=None, plot_params=False,
+                    seaborn_context='notebook'):
+
+    import seaborn
+    seaborn.set(context=seaborn_context)
+    red = seaborn.xkcd_rgb['pale red']
+    blue = seaborn.xkcd_rgb['denim blue']
+    lt_blue = seaborn.xkcd_rgb['pastel blue']
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    
+    model_best_fit = model.best_fit['sed']
+    model_waves = model.waves
+    
+    ax.loglog(model_waves*(1+model.redshift), model_best_fit, color=blue,
+              label='Best Fit Model')
+    
+    undetected = np.isnan(obs_flux)
+    if plot_mono_fluxes:
+        filters = Filters()
+        fwaves = filters.filter_waves
+        filts = np.array(filts)[~undetected]
+        zcorr = 1 + model.redshift
+        mono_fluxes = np.array([filters.calc_mono_flux(f, model_waves*(1+model.redshift),
+                                model_best_fit) for f in filts])
+        ax.plot(waves[~undetected], mono_fluxes, marker='^', ls='None',
+                color=red, label='Model Fluxes')
+        if sum(undetected) > 0:
+            fluxes = np.hstack([mono_fluxes, obs_flux[~undetected],
+                                obs_err[undetected]])
+        else:
+            fluxes = np.hstack([mono_fluxes, obs_flux])
+    else:
+        if sum(undetected) > 0:
+            fluxes = np.hstack([obs_flux[~undetected],
+                                obs_err[undetected]])
+        else:
+            fluxes = obs_flux
+
+    if obs_err is None:
+        ax.plot(waves[~undetected], obs_flux[~undetected], marker='o',
+                ls='None', color='k', label='Observed Fluxes')
+    else:
+        ax.errorbar(waves[~undetected], obs_flux[~undetected],
+                    yerr=obs_err[~undetected], marker='o', ls='None',
+                    color='k', label='Observed Fluxes')
+        if sum(undetected) > 0:
+            ax.quiver(waves[undetected], obs_err[undetected],
+                      np.zeros(sum(undetected)),
+                      -0.025*np.ones(sum(undetected)),
+                      width=0.004, color='k')
+    
+    if plot_params:
+        fs = mpl.rcParams['legend.fontsize']
+        s_alpha = r'%s$ = %.2f$' % (tex_names['alpha'], model.best_fit['alpha'])
+        s_fracAGN = r'%s$ = %.2f$' % ('fracAGN', model.best_fit['fracAGN'])
+        ax.text(0.97, 0.97, s_alpha, ha='right', va='top',
+                    transform=ax.transAxes, fontsize=fs)        
+        ax.text(0.97, 0.97-0.06, s_fracAGN, ha='right', va='top',
+                    transform=ax.transAxes, fontsize=fs)
+
+    if name is not None:
+        ax.set_title(name)
+
+    ax.set_xlim([1, 1000])
+    ax.set_ylim([10**(-0.5)*min(fluxes), 10**(0.5)*max(fluxes)])
+    ax.legend(loc='upper left')
+    ax.set_xlabel('Wavelength [micron]')
+    ax.set_ylabel('Flux Density [Jy]')
+
+    return fig
