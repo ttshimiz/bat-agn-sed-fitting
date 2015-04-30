@@ -634,7 +634,7 @@ class DecompIR(object):
 				                                              self.waves*zcorr, host_sed)
 			out = opt.leastsq(errfunc, [0, 0], args=(y, agn_model_fluxes,
 			                                         host_model_fluxes,yerr), 
-			                   maxfev=1000)
+			                  maxfev=1000)
 
 			self.norms[h, 0] = out[0][0]
 			self.norms[h, 1] = out[0][1]
