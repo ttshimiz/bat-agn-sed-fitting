@@ -508,7 +508,8 @@ class Dale2014(object):
 
 		def errfunc(norm, obs, model, err):
 			return (obs - (norm*model)) / err
-
+	
+		zcorr = (1 + self.redshift)
 		for a in range(len(self.alpha_use)):
 			for f in range(len(self.fracAGN_use)):
 
@@ -517,7 +518,7 @@ class Dale2014(object):
 				for w in range(len(x)):
 					sed = self.get_sed(self.alpha_use[a], self.fracAGN[f])
 					model_fluxes[w] = filters.calc_mono_flux(filts[w],
-															 self.waves, sed)
+															 self.waves*zcorr, sed)
 				out = opt.leastsq(errfunc, 1, args=(y, model_fluxes, yerr))
 
 				self.norms[a, f] = out[0][0]
