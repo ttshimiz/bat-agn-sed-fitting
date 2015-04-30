@@ -10,10 +10,11 @@ import emcee
 import astropy.constants as c
 import astropy.units as u
 from glob import glob
+import os
+direct = os.path.dirname(os.path.abspath(__file__))
 
 # CONSTANTS
 c_micron = c.c.to(u.micron/u.s).value
-
 
 def log_like(params, x, y, yerr, sed_model, fixed, filts, filt_all):
 
@@ -146,8 +147,7 @@ class SEDBayesFitter(object):
 class Filters(object):
 
     def __init__(self):
-
-        fn = glob('/ricci9nb/tshimizu/Github/bat-agn-sed-fitting/Filters/*.txt')
+        fn = glob(direct+'/Filters/*.txt')
         self.names = [x.split('/')[-1].split('.')[0] for x in fn]
         self.filter_trans = {}
         self.filter_waves = {}
