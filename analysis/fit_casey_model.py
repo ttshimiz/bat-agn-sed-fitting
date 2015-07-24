@@ -51,6 +51,7 @@ waves = np.array([12., 22., 70., 160., 250., 350., 500.])
 
 # Uncomment to fit sources with only N detected points.
 # Change the integer on the right side of '==' to N.
+
 sed_use = sed[np.sum(np.isfinite(sed[filt_use].values), axis=1) >= 6]
 
 names_use = sed_use.index
@@ -93,12 +94,11 @@ for n in names_use:
     pownorm_init = np.log10(src_sed['W3']/model_ml.eval_plaw(12))
     model_ml.pownorm.value = pownorm_init
 
-    model_init = lev_marq(model_ml, waves, flux, weights=1/flux_err,
+    model_init = lev_marq(model_ml, waves_use, flux_use, weights=1/flux_err_use,
                           maxiter=1000)
     
-    model_final = bayes.fit(model_init, waves_use, flux_use, yerr=flux_err_use,
-                            filts=filt_detected)
-
+    model_final = bayes.fit(model_init, waves, flux, yerr=flux_err, use_nondetect=True
+                            filts=filt_use)
     print 'Plotting the fit: ', n
     fig_fit = bat_plot.plot_fit(waves, flux, model_final, obs_err=flux_err,
                                 plot_components=True, plot_mono_fluxes=True,
