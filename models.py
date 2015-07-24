@@ -86,7 +86,7 @@ class Greybody(Fittable1DModel):
 		n = c_micron/x	# Calculate frequency of lambda_norm
 		bnu = ((2 * planck_h * n**3 / c**2) *
 			   1 / (np.exp(planck_h * n / k_b / tdust) - 1))
-		return (md * self.k0_cgs * (n / self.nu_norm)**beta * np.pi *
+		return (md * self.k0_cgs * (n / self.nu_norm)**beta *
 				bnu / self.lumD_cm**2)*1e23
 
 	def set_kappa0(self, k0):
@@ -202,12 +202,12 @@ class TwoTempGreybody(Fittable1DModel):
 					1 / (np.exp(planck_h * n / k_b / tdust_cold) - 1))
 		flux_warm = (mwarm * self.k0_cgs *
 					 (n / self.nu_norm)**beta_warm *
-					 np.pi * bnu_warm /
+					 bnu_warm /
 					 self.lumD_cm**2)*1e23
 
 		flux_cold = (mcold * self.k0_cgs *
 					 (n / self.nu_norm)**beta_cold *
-					 np.pi * bnu_cold /
+					 bnu_cold /
 					 self.lumD_cm**2)*1e23
 		return flux_warm + flux_cold
 
@@ -222,7 +222,7 @@ class TwoTempGreybody(Fittable1DModel):
 			   1 / (np.exp(planck_h * n / k_b / self.tdust_warm) - 1))
 		flux_warm = (mwarm * self.k0_cgs *
 					 (n / self.nu_norm)**self.beta_warm *
-					 np.pi * bnu /
+					 bnu /
 					 self.lumD_cm**2)*1e23
 
 		return flux_warm
@@ -238,7 +238,7 @@ class TwoTempGreybody(Fittable1DModel):
 			   1 / (np.exp(planck_h * n / k_b / self.tdust_cold) - 1))
 		flux_cold = (mcold * self.k0_cgs *
 					 (n / self.nu_norm)**self.beta_cold *
-					 np.pi * bnu /
+					 bnu /
 					 self.lumD_cm**2)*1e23
 
 		return flux_cold
@@ -348,7 +348,7 @@ class GreybodyPowerlaw(Fittable1DModel):
 			   1 / (np.exp(planck_h * n / k_b / tdust) - 1))
 		flux_grey = (md * self.k0_cgs *
 					 (n / self.nu_norm)**beta *
-					 np.pi * bnu /
+					 bnu /
 					 self.lumD_cm**2)*1e23
 
 		flux_plaw = (10**pownorm) * (x/wturn)**alpha * np.exp(-(x/wturn)**2)
@@ -376,7 +376,7 @@ class GreybodyPowerlaw(Fittable1DModel):
 			   1 / (np.exp(planck_h * n / k_b / self.tdust) - 1))
 		flux_grey = (md * self.k0_cgs *
 					 (n / self.nu_norm)**self.beta *
-					 np.pi * bnu /
+					 bnu /
 					 self.lumD_cm**2)*1e23
 		return flux_grey
 
