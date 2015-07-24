@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 from fitting import Filters
+import seaborn
+seaborn.set_style('ticks')
 
 tex_names = {'mdust': r'$M_{dust}$',
              'tdust': r'$T_{dust}$',
@@ -25,16 +27,17 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
              name=None, plot_params=False,
              seaborn_context='notebook'):
 
-    import seaborn
+    
     seaborn.set(context=seaborn_context)
+    seaborn.set_style('ticks')
     red = seaborn.xkcd_rgb['pale red']
     blue = seaborn.xkcd_rgb['denim blue']
     lt_blue = seaborn.xkcd_rgb['pastel blue']
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-
-    median_model = model(model_waves/(1+model.redshift))
+    zcorr = 1 + model.redshift
+    median_model = model(model_waves/zcorr) * zcorr
 
     ax.loglog(model_waves, median_model, color=blue, label='Best Fit Model')
 
@@ -48,7 +51,7 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
         for i in range(nspread):
 
             dummy.parameters[~fixed] = model.chain_nb[param_rand[i]]
-            rand_sed[i, :] = dummy(model_waves)
+            rand_sed[i, :] = dummy(model_waves/zcorr) * zcorr
 
         model_2_5, model_97_5 = np.percentile(rand_sed, [2.5, 97.5], axis=0)
         ax.fill_between(model_waves, model_2_5, model_97_5, color=lt_blue,
@@ -59,7 +62,7 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
         if comp_colors is None:
             comp_colors = seaborn.color_palette('colorblind',
                                                 n_colors=ncomps+1)[1:]
-        comps = model.eval_comps(model_waves/(1+model.redshift))
+        comps = model.eval_comps(model_waves/zcorr) * zcorr
         for i in range(ncomps):
             ax.loglog(model_waves, comps[i, :], ls='--',
                       label=model.comp_names[i], color=comp_colors[i])
@@ -70,9 +73,8 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
         filters = Filters()
         fwaves = filters.filter_waves
         filts = np.array(filts)[~undetected]
-        zcorr = 1 + model.redshift
         mono_fluxes = np.array([filters.calc_mono_flux(f, fwaves[f],
-                                dummy2(fwaves[f]/zcorr)) for f in filts])
+                                dummy2(fwaves[f]/zcorr))*zcorr for f in filts])
         ax.plot(waves[~undetected], mono_fluxes, marker='^', ls='None',
                 color=red, label='Model Fluxes')
         if sum(undetected) > 0:
@@ -119,19 +121,20 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
     ax.legend(loc='upper left')
     ax.set_xlabel('Wavelength [micron]')
     ax.set_ylabel('Flux Density [Jy]')
-
+    seaborn.despine()
     return fig
 
 
 def plot_triangle(model, quantiles=[0.16, 0.5, 0.84]):
 
     import triangle
+    seaborn.set_style('ticks')
     fixed  = np.array([model.fixed[n] for n in model.param_names])
     labels = [tex_names[n] for n in np.array(model.param_names)[~fixed]]
 
     fig = triangle.corner(model.chain_nb, quantiles=quantiles,
                           labels=labels, verbose=False)
-
+    seaborn.despine()
     return fig
 
 
@@ -140,7 +143,6 @@ def plot_fit_dale14(waves, obs_flux, model, obs_err=None,
                     name=None, plot_params=False,
                     seaborn_context='notebook'):
 
-    import seaborn
     seaborn.set(context=seaborn_context)
     red = seaborn.xkcd_rgb['pale red']
     blue = seaborn.xkcd_rgb['denim blue']
@@ -216,7 +218,6 @@ def plot_fit_decompir(waves, obs_flux, model, obs_err=None,
                       name=None, plot_params=False,
                       seaborn_context='notebook'):
 
-    import seaborn
     seaborn.set(context=seaborn_context)
     red = seaborn.xkcd_rgb['pale red']
     blue = seaborn.xkcd_rgb['denim blue']
