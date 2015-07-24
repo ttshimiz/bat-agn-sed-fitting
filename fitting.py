@@ -6,6 +6,7 @@ Created on Mon Apr 13 15:49:13 2015
 """
 
 import numpy as np
+from scipy.special import erf
 import emcee
 import astropy.constants as c
 import astropy.units as u
@@ -21,16 +22,26 @@ c_micron = c.c.to(u.micron/u.s).value
 def log_like(params, x, y, yerr, sed_model, fixed, filts, filt_all):
 
     model_fluxes = calc_model(x, params, sed_model, fixed, filts, filt_all)
-
-    return -0.5*(np.sum((y-model_fluxes)**2/yerr**2+np.log(2*np.pi*yerr**2)))
-
+    detected = np.isfinite(y)
+    llike_detected = -0.5*(np.sum((y[detected]-model_fluxes[detected])**2/yerr[detected]**2 +
+                                   np.log(2*np.pi*yerr[detected]**2)))
+    llike_undetected = np.sum(np.log(0.5*(1+erf((yerr[~detected]-model_fluxes[~detected])/(yerr[~detected]/5.*np.sqrt(2))))))
+    #diff = yerr[~detected] - model_fluxes[~detected]
+    #if np.any(diff < 0):
+    #    return -np.inf
+    #else:
+    #    return llike_detected
+    return llike_detected + llike_undetected
+    #return llike_detected
 
 def log_prior(params, sed_model, fixed):
-
+    pnames = np.array(sed_model.param_names)
     bounds = np.array([sed_model.bounds[n] for n in sed_model.param_names])
     bounds = bounds[~fixed]
-    lp = map(uniform_prior, params, bounds)
-
+    lp = np.array(map(uniform_prior, params, bounds))
+#    if not fixed[pnames == 'wturn']:
+#        j = pnames[~fixed] == 'wturn'
+#        lp[j] = gaussian_prior(params[j], 30.0, 20.0)
     return sum(lp)
 
 
@@ -58,6 +69,8 @@ def uniform_prior(x, bounds):
     else:
         return -np.inf
 
+def gaussian_prior(x, mu, sigma):
+    return -0.5*((x-mu)**2/sigma**2 + np.log(2*np.pi*sigma**2))
 
 # Calculate monochromatic flux densities of the model using the
 # filter transmission curves and redshift of the source
@@ -88,9 +101,21 @@ def calc_model(waves, params, sed_model, fixed, filts, filt_all):
     zcorr = 1 + zz
 
     func = filt_all.calc_mono_flux
-    model_fluxes = np.array([func(f, fwaves[f],
-                                  dummy(fwaves[f]/zcorr)) for f in filts])
 
+    model_fluxes = np.zeros(len(filts))
+
+    for i in range(len(filts)):
+        
+        if filts[i] != 'Top':
+            model_fluxes[i] = func(filts[i], fwaves[filts[i]], dummy(fwaves[filts[i]]/zcorr)) * zcorr
+        else:
+            fw = np.linspace(waves[i]-1, waves[i]+1, 100)
+            ft = np.ones(len(fw))/len(fw)
+            sed = dummy(fw/zcorr)
+            integ_num = np.trapz(ft*sed, x=c_micron/fw)
+            integ_denom = np.trapz(ft, x=c_micron/fw)
+            model_fluxes[i] = integ_num/integ_denom * zcorr
+        
     return model_fluxes
 
 
@@ -115,12 +140,30 @@ class SEDBayesFitter(object):
     def set_nthreads(self, nt):
         self.threads = nt
 
-    def fit(self, model, x, y, yerr=None, filts=None,
+    def fit(self, model, x, y, yerr=None, filts=None, use_nondetect=False,
             best=np.median, errs=(16, 84)):
 
         mod = model.copy()
         fixed = np.array([mod.fixed[n] for n in mod.param_names])
         self.ndims = np.sum(~fixed)
+        
+        # Give equal weight to all data points if yerr is None
+        if yerr is None:
+            yerr = np.ones(len(x))
+        elif np.isscalar(yerr):
+            yerr = y*yerr
+
+        # Use narrow tophat filter if filts is None
+        if filts is None:
+            filts = ['Top' for xi in x]
+
+        # Get rid of the non-detections if use_nondetect is False
+        if not use_nondetect:
+            detect = np.isfinite(y)
+            x = x[detect]
+            y = y[detect]
+            yerr = yerr[detect]
+            filts = filts[detect]
 
         # Use the current model parameters as the initial values
         init = mod.parameters[~fixed]
