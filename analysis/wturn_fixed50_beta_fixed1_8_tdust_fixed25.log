@@ -1,0 +1,73 @@
+WARNING: AstropyDeprecationWarning: Config parameter 'default_cosmology' in section [astropy.cosmology.core] is deprecated. Use science state astropy.cosmology.core.default_cosmology instead. [astropy.utils.state]
+Fitting:  2MASXiJ1802473-145454
+Plotting the fit:  2MASXiJ1802473-145454
+Saving the fit:  2MASXiJ1802473-145454
+Fitting:  2MASXJ00253292+6821442
+Plotting the fit:  2MASXJ00253292+6821442
+Saving the fit:  2MASXJ00253292+6821442
+Fitting:  2MASXJ01064523+0638015
+Plotting the fit:  2MASXJ01064523+0638015
+Saving the fit:  2MASXJ01064523+0638015
+Fitting:  2MASXJ03305218+0538253
+Plotting the fit:  2MASXJ03305218+0538253
+Saving the fit:  2MASXJ03305218+0538253
+Fitting:  2MASXJ04440903+2813003
+Plotting the fit:  2MASXJ04440903+2813003
+Saving the fit:  2MASXJ04440903+2813003
+Fitting:  2MASXJ05020903+0331499
+Plotting the fit:  2MASXJ05020903+0331499
+Saving the fit:  2MASXJ05020903+0331499
+Fitting:  2MASXJ09043699+5536025
+Plotting the fit:  2MASXJ09043699+5536025
+Saving the fit:  2MASXJ09043699+5536025
+Fitting:  2MASXJ15064412+0351444
+Plotting the fit:  2MASXJ15064412+0351444
+Saving the fit:  2MASXJ15064412+0351444
+Fitting:  2MASXJ15462424+6929102
+Plotting the fit:  2MASXJ15462424+6929102
+Saving the fit:  2MASXJ15462424+6929102
+Fitting:  ARP102B
+Plotting the fit:  ARP102B
+Saving the fit:  ARP102B
+Fitting:  ESO121-IG028
+Plotting the fit:  ESO121-IG028
+Saving the fit:  ESO121-IG028
+Fitting:  ESO198-024
+Plotting the fit:  ESO198-024
+Saving the fit:  ESO198-024
+Fitting:  ESO479-G031
+Plotting the fit:  ESO479-G031
+Saving the fit:  ESO479-G031
+Fitting:  IC2921
+Plotting the fit:  IC2921
+Saving the fit:  IC2921
+Fitting:  IGRJ11366-6002
+Plotting the fit:  IGRJ11366-6002
+Saving the fit:  IGRJ11366-6002
+Fitting:  IRAS05078+1626
+Plotting the fit:  IRAS05078+1626
+Saving the fit:  IRAS05078+1626
+Fitting:  MCG-01-09-045
+Plotting the fit:  MCG-01-09-045
+Saving the fit:  MCG-01-09-045
+Fitting:  MCG-01-13-025
+Plotting the fit:  MCG-01-13-025
+Saving the fit:  MCG-01-13-025
+Fitting:  MCG-02-02-095
+Plotting the fit:  MCG-02-02-095
+Saving the fit:  MCG-02-02-095
+Fitting:  NGC5683
+Plotting the fit:  NGC5683
+Saving the fit:  NGC5683
+Fitting:  SBS1301+540
+Plotting the fit:  SBS1301+540
+Saving the fit:  SBS1301+540
+Fitting:  UGC03142
+Plotting the fit:  UGC03142
+Saving the fit:  UGC03142
+Fitting:  WKK4438
+Plotting the fit:  WKK4438
+Saving the fit:  WKK4438
+Fitting:  WKK6471
+Plotting the fit:  WKK6471
+Saving the fit:  WKK6471
