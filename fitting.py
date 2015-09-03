@@ -39,9 +39,9 @@ def log_prior(params, sed_model, fixed):
     bounds = np.array([sed_model.bounds[n] for n in sed_model.param_names])
     bounds = bounds[~fixed]
     lp = np.array(map(uniform_prior, params, bounds))
-#    if not fixed[pnames == 'wturn']:
-#        j = pnames[~fixed] == 'wturn'
-#        lp[j] = gaussian_prior(params[j], 30.0, 20.0)
+    if not fixed[pnames == 'wturn']:
+        j = pnames[~fixed] == 'wturn'
+        lp[j] = gaussian_prior(params[j], 45.0, 20.0)
     return sum(lp)
 
 
@@ -65,7 +65,7 @@ def uniform_prior(x, bounds):
         bounds[1] = np.inf
 
     if (x >= bounds[0]) & (x <= bounds[1]):
-        return 0
+        return np.log(1.0/(bounds[1] - bounds[0]))
     else:
         return -np.inf
 
