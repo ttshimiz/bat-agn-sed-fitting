@@ -27,6 +27,18 @@ wise_data = pd.read_csv('../../bat-data/bat_wise.csv', index_col=0,
 
 sed = herschel_data.join(wise_data[['W3', 'W3_err', 'W4', 'W4_err']])
 
+# SPIRE fluxes that are seriously contaminated by a companion should be upper limits
+psw_flag = herschel_data['PSW_flag']
+pmw_flag = herschel_data['PMW_flag']
+plw_flag = herschel_data['PLW_flag']
+
+sed['PSW_err'][psw_flag == 'AD'] = sed['PSW'][psw_flag == 'AD']
+sed['PSW'][psw_flag == 'AD'] = np.nan
+sed['PMW_err'][pmw_flag == 'AD'] = sed['PMW'][pmw_flag == 'AD']
+sed['PMW'][pmw_flag == 'AD'] = np.nan
+sed['PLW_err'][plw_flag == 'AD'] = sed['PLW'][plw_flag == 'AD']
+sed['PLW'][plw_flag == 'AD'] = np.nan
+
 # Upload info on BAT AGN for redshift and luminosity distance
 bat_info = pd.read_csv('../../bat-data/bat_info.csv', index_col=0)
 
@@ -36,7 +48,7 @@ waves = np.array([12., 22., 70., 160., 250., 350., 500.])
 
 # Uncomment to fit sources with only N undetected points.
 # Change the integer on the right side of '==' to N.
-sed_use = sed[np.sum(np.isnan(sed.values), axis=1) <= 4]
+sed_use = sed[np.sum(np.isfinite(sed[filt_use].values), axis=1) >= 4]
 
 names_use = sed_use.index
 
@@ -46,11 +58,11 @@ dale_model = bat_model.Dale2014()
 for n in names_use:
     print 'Fitting: ', n
     src_sed = sed_use.loc[n][filt_use]
-    flux = np.array(src_sed)
+    flux = np.array(src_sed, dtype=np.float)
     flux_detected = np.isfinite(flux)
     flux_use = flux[flux_detected]
     src_err = sed_use.loc[n][filt_err]
-    flux_err = np.array(src_err)
+    flux_err = np.array(src_err, dtype=np.float)
     flux_err_use = flux_err[flux_detected]
     filt_detected = filt_use[flux_detected]
     waves_use = waves[flux_detected]
