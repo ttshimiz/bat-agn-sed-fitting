@@ -442,10 +442,32 @@ class GreybodyPowerlaw(Fittable1DModel):
 
 	def calc_luminosity(self, lower=8.0, upper=1000.0):
 
-		waves = np.arange(lower, upper, 0.01)
+		waves = np.arange(lower, upper, 0.1)
 		freq = c_micron/waves
 
 		flux_density = self(waves)/1e23
+		integral = -np.trapz(flux_density, freq)
+		lum = (4*np.pi)*(self.lumD_cm)**2*integral/const.L_sun.cgs.value
+
+		return lum
+		
+	def calc_bb_lum(self, lower=8.0, upper=1000.0):
+
+		waves = np.arange(lower, upper, 0.1)
+		freq = c_micron/waves
+
+		flux_density = self.eval_grey(waves)/1e23
+		integral = -np.trapz(flux_density, freq)
+		lum = (4*np.pi)*(self.lumD_cm)**2*integral/const.L_sun.cgs.value
+
+		return lum
+	
+	def calc_plaw_lum(self, lower=8.0, upper=1000.0):
+
+		waves = np.arange(lower, upper, 0.1)
+		freq = c_micron/waves
+
+		flux_density = self.eval_plaw(waves)/1e23
 		integral = -np.trapz(flux_density, freq)
 		lum = (4*np.pi)*(self.lumD_cm)**2*integral/const.L_sun.cgs.value
 
@@ -567,16 +589,18 @@ class DecompIR(object):
 		self.set_redshift(redshift)
 		self.set_lumD(lumD)
 		
-		self.host_names = ['SB1', 'SB2', 'SB3', 'SB4', 'SB5']
+		self.host_names = ['SB1', 'SB2', 'SB3', 'SB4', 'SB5', 'Arp220']
 		self.agn_names = ['Mean', 'HiLum', 'LoLum']
 		
-		self.waves = np.loadtxt(direct+'/DecompIR/templates.txt', usecols=[0])
-		models = np.loadtxt(direct+'/DecompIR/templates.txt', usecols=[1, 2, 3, 4, 5, 6, 7, 8])
+		self.waves = np.loadtxt(direct+'/DecompIR/templates3.txt', usecols=[0])
+		models = np.loadtxt(direct+'/DecompIR/templates3.txt', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 11, 12])
 		self.host_models = {'SB1': models[:, 3],
 							'SB2': models[:, 4],
 							'SB3': models[:, 5],
 							'SB4': models[:, 6],
-							'SB5': models[:, 7]}
+							'SB5': models[:, 7],
+							'Arp220': models[:, 8],
+							'M82': models[:, 9]}
 		self.agn_models = {'Mean': models[:, 0],
 						   'HiLum': models[:, 1],
 						   'LoLum': models[:, 2]}
