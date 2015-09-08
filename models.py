@@ -106,7 +106,7 @@ class Greybody(Fittable1DModel):
 		self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
 		self.nu_norm = (c_micron/lnorm)	 # Convert to Hz
 	
-	def set_lumD(self, ld):
+	def set_lumD(self, ld=1.0):
 		"""
 		Method to change the luminosity distance.
 		"""
@@ -117,12 +117,15 @@ class Greybody(Fittable1DModel):
 			self.lumD = ld	# Attach units to luminosity distance
 			self.lumD_cm = (ld*u.Mpc).cgs.value	 # Convert to cm
 
-	def set_redshift(self, zz):
+	def set_redshift(self, zz=0.0):
 		"""
 		Method to change the redshift.
 		"""
+		if zz is None:
+			self.redshift = apy_cosmo.z_at_value(cosmo.luminosity_distance, self.lumD*u.Mpc)
+		else:
+			self.redshift = zz
 
-		self.redshift = zz
 
 	def calc_luminosity(self, lower=8.0, upper=1000.0):
 
@@ -260,7 +263,7 @@ class TwoTempGreybody(Fittable1DModel):
 		self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
 		self.nu_norm = (c.c.to(u.micron/u.s)/lnorm).value  # Convert to Hz
 
-	def set_lumD(self, ld):
+	def set_lumD(self, ld=1.0):
 		"""
 		Method to change the luminosity distance.
 		"""
@@ -271,12 +274,14 @@ class TwoTempGreybody(Fittable1DModel):
 			self.lumD = ld	# Attach units to luminosity distance
 			self.lumD_cm = (ld*u.Mpc).cgs.value	 # Convert to cm
 
-	def set_redshift(self, zz):
+	def set_redshift(self, zz=0.0):
 		"""
 		Method to change the redshift.
 		"""
-
-		self.redshift = zz
+		if zz is None:
+			self.redshift = apy_cosmo.z_at_value(cosmo.luminosity_distance, self.lumD*u.Mpc)
+		else:
+			self.redshift = zz
 
 	def calc_luminosity(self, lower=8.0, upper=1000.0):
 
@@ -422,7 +427,7 @@ class GreybodyPowerlaw(Fittable1DModel):
 		self.lambda_norm = lnorm*u.micron  # Attach units to lambda_norm
 		self.nu_norm = (c_micron/lnorm)	 # Convert to Hz
 
-	def set_lumD(self, ld):
+	def set_lumD(self, ld=1.0):
 		"""
 		Method to change the luminosity distance.
 		"""
@@ -433,12 +438,14 @@ class GreybodyPowerlaw(Fittable1DModel):
 			self.lumD = ld	# Attach units to luminosity distance
 			self.lumD_cm = (ld*u.Mpc).cgs.value	 # Convert to cm
 
-	def set_redshift(self, zz):
+	def set_redshift(self, zz=0.0):
 		"""
 		Method to change the redshift.
 		"""
-
-		self.redshift = zz
+		if zz is None:
+			self.redshift = apy_cosmo.z_at_value(cosmo.luminosity_distance, self.lumD*u.Mpc)
+		else:
+			self.redshift = zz
 
 	def calc_luminosity(self, lower=8.0, upper=1000.0):
 
@@ -506,12 +513,15 @@ class Dale2014(object):
 			self.lumD = ld	# Attach units to luminosity distance
 			self.lumD_cm = (ld*u.Mpc).cgs.value	 # Convert to cm
 
-	def set_redshift(self, zz):
+	def set_redshift(self, zz=0.0):
 		"""
 		Method to change the redshift.
 		"""
+		if zz is None:
+			self.redshift = apy_cosmo.z_at_value(cosmo.luminosity_distance, self.lumD*u.Mpc)
+		else:
+			self.redshift = zz
 
-		self.redshift = zz
 
 	def fit(self, x, y, yerr=None, filts=None,
 			alpha_use='all', fracAGN_use='all'):
@@ -605,7 +615,7 @@ class DecompIR(object):
 						   'HiLum': models[:, 1],
 						   'LoLum': models[:, 2]}
 	
-	def set_lumD(self, ld):
+	def set_lumD(self, ld=1.0):
 		"""
 		Method to change the luminosity distance.
 		"""
@@ -616,11 +626,14 @@ class DecompIR(object):
 			self.lumD = ld	# Attach units to luminosity distance
 			self.lumD_cm = (ld*u.Mpc).cgs.value	 # Convert to cm
 
-	def set_redshift(self, zz):
+	def set_redshift(self, zz=0.0):
 		"""
-        Method to change the redshift.
-        """
-		self.redshift = zz
+		Method to change the redshift.
+		"""
+		if zz is None:
+			self.redshift = apy_cosmo.z_at_value(cosmo.luminosity_distance, self.lumD*u.Mpc)
+		else:
+			self.redshift = zz
 	
 	def fit(self, x, y, yerr=None, filts=None,
 			agn_use='Mean', host_use='all'):
