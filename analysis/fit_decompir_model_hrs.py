@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Sept 08 14:42:19 2015
 
+Created on Thu Apr 30 15:36:40 2015
 @author: ttshimiz
+
 """
 
 import sys
@@ -103,112 +104,49 @@ sed_use = hrs_sed[src_use]
 err_use = hrs_err[src_use]
 names_use = sed_use.index
 
-base_model = bat_model.GreybodyPowerlaw(0.0, 25., 2.0, 0.0, 2.0, 45.0)
-lev_marq = apy_fit.LevMarLSQFitter()
-bayes = bat_fit.SEDBayesFitter(threads=8)
 
-# Fix parameters
-#base_model.wturn.fixed = True
-base_model.beta.fixed = True
+# Base Decompir 2014 model
+decompir_model = bat_model.DecompIR()
 
-#for n in names_use:
-for n in [1]:    
-    print 'Fitting: HRS ', n
+for n in names_use[0:1]:
+    print 'Fitting: ', n
     src_sed = sed_use.loc[n][filters]/1000.
-    src_err = err_use.loc[n][filt_err]/1000.
-    
     flux = np.array(src_sed, dtype=np.float)
-    flux_err = np.array(src_err, dtype=np.float)
-    
     flux_detected = np.isfinite(flux)
-    flux_use = flux_err != 0
-    
-    flux_good = flux[flux_detected & flux_use]
-    flux_err_good = flux_err[flux_detected & flux_use]
-    filts_good = filters[flux_detected & flux_use]
-    waves_good = waves[flux_detected & flux_use]
+    flux_use = flux[flux_detected]
+    src_err = err_use.loc[n][filt_err]/1000.
+    flux_err = np.array(src_err, dtype=np.float)
+    flux_err_use = flux_err[flux_detected]
+    filt_detected = filters[flux_detected]
+    waves_use = waves[flux_detected]
 	
     src_lumD = hrs_data.loc[n]['Dist_Mpc']
 
-    model_ml = base_model.copy()
-    model_ml.set_lumD(src_lumD)
-    model_ml.set_redshift(None)
-      
-    # Roughly guess initial parameters using the data
-    # Use the slope between W4 and W3 as guess for alpha
-    if (np.isfinite(src_sed['W3'])) & (np.isfinite(src_sed['W4'])):
-        alpha_init = (np.log10(src_sed['W4']/src_sed['W3']) /
-                  	  np.log10(waves[1]/waves[0]))
-        model_ml.alpha.value = alpha_init
-    else:
-        model_ml.alpha.value = 1.0
-    
-    # Use the flux density at 250, 160, 350, or 100 as guess for Mdust
-    if not np.isnan(src_sed['PSW']):
-        mdust_init = np.log10(src_sed['PSW']/model_ml.eval_grey(250.))
-    elif not np.isnan(src_sed['PACS160']):
-        mdust_init = np.log10(src_sed['PACS160']/model_ml.eval_grey(160.))
-    elif not np.isnan(src_sed['PMW']):
-        mdust_init = np.log10(src_sed['PMW']/model_ml.eval_grey(350.))
-    elif not np.isnan(src_sed['PACS100']):
-        mdust_init = np.log10(src_sed['PACS100']/model_ml.eval_grey(70.))
-    model_ml.mdust.value = mdust_init
-    
-    # Use the W3 flux density as guess for normalization of powerlaw
-    if np.isfinite(src_sed['W3']):
-        pownorm_init = np.log10(src_sed['W3']/model_ml.eval_plaw(12))
-    elif np.isfinite(src_sed['W4']):
-        pownorm_init = np.log10(src_sed['W3']/model_ml.eval_plaw(22))
-    else:
-        pownorm_init = 0.0
-    model_ml.pownorm.value = pownorm_init
-    
-    # Fix certain parameters for the maximum likelihood estimate
-    model_ml.wturn.fixed = True
-    model_ml.beta.fixed = True
-    model_ml.tdust.fixed = True
-    
-    # Fit the model using Levenberg-Marquardt algorithm to get the best initial guesses
-    model_init = lev_marq(model_ml, waves_good, flux_good, weights=1/flux_err_good,
-                          maxiter=1000)
-    
-    # Change back the fixed parameters to what's wanted for Bayesian analysis
-    model_init.wturn.fixed = False
-    model_init.beta.fixed = True
-    model_init.tdust.fixed = False
-    model_init.mdust.value = 5.0
-    
-    # Fit the model using MCMC
-    model_final = bayes.fit(model_init, waves[flux_use], flux[flux_use], yerr=flux_err[flux_use], use_nondetect=True,
-                            filts=filters[flux_use])
+    decompir_model.set_lumD(src_lumD)
+    decompir_model.set_redshift(None)
 
-    # Plot the best fit along with the data
+    decompir_model.fit(waves, flux, yerr=flux_err, filts=filters)
+
+    print decompir_model.best_fit['host_name']
     print 'Plotting the fit: ', n
-    fig_fit = bat_plot.plot_fit(waves[flux_use], flux[flux_use], model_final, obs_err=flux_err[flux_use],
-                                plot_components=True, plot_mono_fluxes=True,
-                                filts=filters[flux_use], plot_fit_spread=True,
-                                name=n, plot_params=True)
-    fig_fit.savefig('casey_bayes_results/hrs_beta_fixed_2_wturn_gaussianPrior/sed_plots/HRS' + str(n) +
-                    '_casey_bayes_beta_fixed_2_wturn_gaussianPrior_sed_fit.png',
-                    bbox_inches='tight')
-    plt.close(fig_fit)
 
-    # Plot the marginal posterior distributions for each fitted parameter
-    fig_triangle = bat_plot.plot_triangle(model_final)
-    fig_triangle.savefig('casey_bayes_results/hrs_beta_fixed_2_wturn_gaussianPrior/triangle_plots/HRS' + str(n) +
-                         '_casey_bayes_beta_fixed_2_wturn_gaussianPrior_triangle.png',
-                         bbox_inches='tight')
-    plt.close(fig_triangle)
+    fig = bat_plot.plot_fit_decompir(waves, flux, decompir_model, obs_err=flux_err,
+                                   plot_mono_fluxes=True, filts=filters,
+                                   name=n, plot_params=True, plot_components=True)
 
-    # Save the fitting results in a Python pickle file
+    fig.savefig('./decompir_results/hrs_sb+arp220/sed_plots/HRS'+str(n)+'_decompir_best_fit_sed.png',
+                bbox_inches='tight')
+
+    plt.close(fig)
+
     print 'Saving the fit: ', n
     fit_dict = {'name': n,
                 'flux': flux,
                 'flux_err': flux_err,
-                'best_fit_model': model_final,
+                'best_fit_model': decompir_model,
                 'filters': filters,
                 'waves': waves}
-    pickle_file = open('casey_bayes_results/hrs_beta_fixed_2_wturn_gaussianPrior/pickles/HRS' + str(n) +
-                       '_casey_bayes_beta_fixed_2_wturn_gaussianPrior.pickle', 'wb')
+    pickle_file = open('./decompir_results/hrs_sb+arp220/pickles/HRS'+str(n)+'_decompir_best_fit_model.pickle',
+                       'wb')
     pickle.dump(fit_dict, pickle_file)
     pickle_file.close()
