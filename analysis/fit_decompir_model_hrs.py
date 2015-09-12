@@ -41,8 +41,8 @@ hrs_err.loc[hrs_flag['Flag250'] == 0, 'PSW_err'] = 5./3.*hrs_sed.loc[hrs_flag['F
 hrs_err.loc[hrs_flag['Flag350'] == 0, 'PMW_err'] = 5./3.*hrs_sed.loc[hrs_flag['Flag350'] == 0, 'PMW']
 hrs_err.loc[hrs_flag['Flag500'] == 0, 'PLW_err'] = 5./3.*hrs_sed.loc[hrs_flag['Flag500'] == 0, 'PLW']
 
-#hrs_sed.loc[hrs_flag['Flag12'] == 0, 'W3'] = np.nan
-#hrs_sed.loc[hrs_flag['Flag22'] == 0, 'W4'] = np.nan
+hrs_sed.loc[hrs_flag['Flag12'] == 0, 'W3'] = np.nan
+hrs_sed.loc[hrs_flag['Flag22'] == 0, 'W4'] = np.nan
 hrs_sed.loc[hrs_flag['Flag100'] == 0, 'PACS100'] = np.nan
 hrs_sed.loc[hrs_flag['Flag160'] == 0, 'PACS160'] = np.nan
 hrs_sed.loc[hrs_flag['Flag250'] == 0, 'PSW'] = np.nan
@@ -108,7 +108,7 @@ names_use = sed_use.index
 # Base Decompir 2014 model
 decompir_model = bat_model.DecompIR()
 
-for n in names_use[0:1]:
+for n in names_use:
     print 'Fitting: ', n
     src_sed = sed_use.loc[n][filters]/1000.
     flux = np.array(src_sed, dtype=np.float)
