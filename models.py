@@ -602,15 +602,14 @@ class DecompIR(object):
 		self.host_names = ['SB1', 'SB2', 'SB3', 'SB4', 'SB5', 'Arp220']
 		self.agn_names = ['Mean', 'HiLum', 'LoLum']
 		
-		self.waves = np.loadtxt(direct+'/DecompIR/templates3.txt', usecols=[0])
-		models = np.loadtxt(direct+'/DecompIR/templates3.txt', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 11, 12])
+		self.waves = np.loadtxt(direct+'/DecompIR/templates2.txt', usecols=[0])
+		models = np.loadtxt(direct+'/DecompIR/templates2.txt', usecols=[1, 2, 3, 4, 5, 6, 7, 8, 11])
 		self.host_models = {'SB1': models[:, 3],
 							'SB2': models[:, 4],
 							'SB3': models[:, 5],
 							'SB4': models[:, 6],
 							'SB5': models[:, 7],
-							'Arp220': models[:, 8],
-							'M82': models[:, 9]}
+							'Arp220': models[:, 8]}
 		self.agn_models = {'Mean': models[:, 0],
 						   'HiLum': models[:, 1],
 						   'LoLum': models[:, 2]}
@@ -666,10 +665,10 @@ class DecompIR(object):
 			
 			for w in range(len(x)):
 				agn_model_fluxes[w] = filters.calc_mono_flux(filts[w],
-														     self.waves*zcorr, self.agn_use)
+														     self.waves*zcorr, self.agn_use)*zcorr
 				host_model_fluxes[w] = filters.calc_mono_flux(filts[w],
-				                                              self.waves*zcorr, host_sed)
-			out = opt.leastsq(errfunc, [0, 0], args=(y, agn_model_fluxes,
+				                                              self.waves*zcorr, host_sed)*zcorr
+			out = opt.leastsq(errfunc, [-4, -2], args=(y, agn_model_fluxes,
 			                                         host_model_fluxes,yerr), 
 			                  maxfev=1000)
 
