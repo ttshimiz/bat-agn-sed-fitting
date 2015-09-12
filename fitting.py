@@ -26,13 +26,8 @@ def log_like(params, x, y, yerr, sed_model, fixed, filts, filt_all):
     llike_detected = -0.5*(np.sum((y[detected]-model_fluxes[detected])**2/yerr[detected]**2 +
                                    np.log(2*np.pi*yerr[detected]**2)))
     llike_undetected = np.sum(np.log(0.5*(1+erf((yerr[~detected]-model_fluxes[~detected])/(yerr[~detected]/5.*np.sqrt(2))))))
-    #diff = yerr[~detected] - model_fluxes[~detected]
-    #if np.any(diff < 0):
-    #    return -np.inf
-    #else:
-    #    return llike_detected
+
     return llike_detected + llike_undetected
-    #return llike_detected
 
 def log_prior(params, sed_model, fixed):
     pnames = np.array(sed_model.param_names)
