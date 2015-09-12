@@ -652,14 +652,15 @@ class DecompIR(object):
 		self.norms = np.zeros((len(self.host_use), 2))
 
 		def errfunc(params, obs, agn_model, host_model, err):
+			detected = np.isfinite(obs)
 			norm_agn = params[0]
 			norm_host = params[1]
-			return (obs - (10**norm_agn*agn_model + 10**norm_host*host_model)) / err
+			return (obs[detected] - (10**norm_agn*agn_model[detected] + 10**norm_host*host_model[detected])) / err[detected]
         
 		def nll(params, obs, agn_model, host_model, err):
 			norm_agn = params[0]
 			norm_host = params[1]
-			total_model = (10**norm_agn*agn_model + 10**norm_host*host_model)
+			total_model = (10**(norm_agn+np.log10(agn_model)) + 10**(norm_host+np.log10(host_model)))
 			return -log_like(obs, err, total_model)
 
 		print y
@@ -672,14 +673,12 @@ class DecompIR(object):
 			zcorr = (1+self.redshift)
 			
 			for w in range(len(x)):
-				agn_model_fluxes[w] = filters.calc_mono_flux(filts[w],
-														     self.waves*zcorr, self.agn_use*zcorr)
-				host_model_fluxes[w] = filters.calc_mono_flux(filts[w],
-				                                              self.waves*zcorr, host_sed*zcorr)
-			#out = opt.leastsq(errfunc, [-4, -2], args=(y, agn_model_fluxes,
-			#                                         host_model_fluxes,yerr), 
-			#                  maxfev=1000)
-			out = opt.minimize(nll, [-3, -3], args=(y, agn_model_fluxes, host_model_fluxes, yerr)) 
+				agn_model_fluxes[w] = filters.calc_mono_flux(filts[w], self.waves*zcorr, self.agn_use*zcorr)										     
+				host_model_fluxes[w] = filters.calc_mono_flux(filts[w], self.waves*zcorr, host_sed*zcorr)
+			
+			# Use least-squares to get near the MLE	                   
+			out_ls = opt.leastsq(errfunc, [0, 0], args=(y, agn_model_fluxes, host_model_fluxes,yerr), maxfev=1000)
+			out = opt.minimize(nll, [out_ls[0][0], out_ls[0][1]], args=(y, agn_model_fluxes, host_model_fluxes, yerr)) 
 			print out
 			#self.norms[h, 0] = out[0][0]
 			#self.norms[h, 1] = out[0][1]
