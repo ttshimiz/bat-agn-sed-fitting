@@ -112,7 +112,7 @@ bayes = bat_fit.SEDBayesFitter(threads=8)
 base_model.beta.fixed = True
 
 #for n in names_use:
-for n in [67, 124, 140, 183, 261, 263]:    
+for n in [1]:    
     print 'Fitting: HRS ', n
     src_sed = sed_use.loc[n][filters]/1000.
     src_err = err_use.loc[n][filt_err]/1000.
