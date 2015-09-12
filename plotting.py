@@ -238,9 +238,9 @@ def plot_fit_decompir(waves, obs_flux, model, obs_err=None,
             comp_colors = seaborn.color_palette('colorblind',
                                                 n_colors=ncomps+1)[1:]
         ax.loglog(model_waves*(1+model.redshift), model.best_fit['agn_sed'], ls='--',
-                  label='AGN', color=comp_colors[0])
+                  label='AGN', color=comp_colors[1])
         ax.loglog(model_waves*(1+model.redshift), model.best_fit['host_sed'], ls='--',
-                  label='Host', color=comp_colors[1])
+                  label='Host', color=comp_colors[0])
     
     undetected = np.isnan(obs_flux)
     if plot_mono_fluxes:
