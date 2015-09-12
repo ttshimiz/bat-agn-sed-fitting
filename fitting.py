@@ -19,13 +19,13 @@ direct = os.path.dirname(os.path.abspath(__file__))
 # CONSTANTS
 c_micron = c.c.to(u.micron/u.s).value
 
-def log_like(params, x, y, yerr, sed_model, fixed, filts, filt_all):
+def log_like(y, yerr, y_model):
 
-    model_fluxes = calc_model(x, params, sed_model, fixed, filts, filt_all)
+    #model_fluxes = calc_model(x, params, sed_model, fixed, filts, filt_all)
     detected = np.isfinite(y)
-    llike_detected = -0.5*(np.sum((y[detected]-model_fluxes[detected])**2/yerr[detected]**2 +
+    llike_detected = -0.5*(np.sum((y[detected]-y_model[detected])**2/yerr[detected]**2 +
                                    np.log(2*np.pi*yerr[detected]**2)))
-    llike_undetected = np.sum(np.log(0.5*(1+erf((yerr[~detected]-model_fluxes[~detected])/(yerr[~detected]/5.*np.sqrt(2))))))
+    llike_undetected = np.sum(np.log(0.5*(1+erf((yerr[~detected]-y_model[~detected])/(yerr[~detected]/5.*np.sqrt(2))))))
 
     return llike_detected + llike_undetected
 
@@ -46,7 +46,8 @@ def log_post(params, x, y, yerr, sed_model, fixed, filts, filt_all):
     if not np.isfinite(lprior):
         return -np.inf
     else:
-        llike = log_like(params, x, y, yerr, sed_model, fixed, filts, filt_all)
+        model_fluxes = calc_model(x, params, sed_model, fixed, filts, filt_all)
+        llike = log_like(y, yerr, model_fluxes)
         if not np.isfinite(llike):
             return -np.inf
         else:
