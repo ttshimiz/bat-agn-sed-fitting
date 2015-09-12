@@ -40,8 +40,8 @@ hrs_err.loc[hrs_flag['Flag250'] == 0, 'PSW_err'] = 5./3.*hrs_sed.loc[hrs_flag['F
 hrs_err.loc[hrs_flag['Flag350'] == 0, 'PMW_err'] = 5./3.*hrs_sed.loc[hrs_flag['Flag350'] == 0, 'PMW']
 hrs_err.loc[hrs_flag['Flag500'] == 0, 'PLW_err'] = 5./3.*hrs_sed.loc[hrs_flag['Flag500'] == 0, 'PLW']
 
-hrs_sed.loc[hrs_flag['Flag12'] == 0, 'W3'] = np.nan
-hrs_sed.loc[hrs_flag['Flag22'] == 0, 'W4'] = np.nan
+#hrs_sed.loc[hrs_flag['Flag12'] == 0, 'W3'] = np.nan
+#hrs_sed.loc[hrs_flag['Flag22'] == 0, 'W4'] = np.nan
 hrs_sed.loc[hrs_flag['Flag100'] == 0, 'PACS100'] = np.nan
 hrs_sed.loc[hrs_flag['Flag160'] == 0, 'PACS160'] = np.nan
 hrs_sed.loc[hrs_flag['Flag250'] == 0, 'PSW'] = np.nan
@@ -50,13 +50,13 @@ hrs_sed.loc[hrs_flag['Flag500'] == 0, 'PLW'] = np.nan
 
 # Upper limits in the HRS photometry were all 3 sigma upper limits
 # We need to change the data to a 5-sigma cutoff for all of the photometry
-hrs_flag.loc[hrs_sed['W3']/hrs_err['W3_err'] < 5, 'Flag12'] = 0
-hrs_err.loc[(hrs_sed['W3']/hrs_err['W3_err'] < 5), 'W3_err'] = 5.*hrs_err.loc[(hrs_sed['W3']/hrs_err['W3_err'] < 5) & (hrs_sed['W3'] != 0), 'W3_err']
-hrs_sed.loc[hrs_sed['W3']/hrs_err['W3_err'] < 5, 'W3'] = np.nan
+#hrs_flag.loc[hrs_sed['W3']/hrs_err['W3_err'] < 5, 'Flag12'] = 0
+#hrs_err.loc[(hrs_sed['W3']/hrs_err['W3_err'] < 5), 'W3_err'] = 5.*hrs_err.loc[(hrs_sed['W3']/hrs_err['W3_err'] < 5) & (hrs_sed['W3'] != 0), 'W3_err']
+#hrs_sed.loc[hrs_sed['W3']/hrs_err['W3_err'] < 5, 'W3'] = np.nan
 
-hrs_flag.loc[hrs_sed['W4']/hrs_err['W4_err'] < 5, 'Flag22'] = 0
-hrs_err.loc[(hrs_sed['W4']/hrs_err['W4_err'] < 5), 'W4_err'] = 5.*hrs_err.loc[(hrs_sed['W4']/hrs_err['W4_err'] < 5) & (hrs_sed['W4'] != 0), 'W4_err']
-hrs_sed.loc[hrs_sed['W4']/hrs_err['W4_err'] < 5, 'W4'] = np.nan
+#hrs_flag.loc[hrs_sed['W4']/hrs_err['W4_err'] < 5, 'Flag22'] = 0
+#hrs_err.loc[(hrs_sed['W4']/hrs_err['W4_err'] < 5), 'W4_err'] = 5.*hrs_err.loc[(hrs_sed['W4']/hrs_err['W4_err'] < 5) & (hrs_sed['W4'] != 0), 'W4_err']
+#hrs_sed.loc[hrs_sed['W4']/hrs_err['W4_err'] < 5, 'W4'] = np.nan
 
 hrs_flag.loc[hrs_sed['PACS100']/hrs_err['PACS100_err'] < 5, 'Flag100'] = 0
 hrs_err.loc[(hrs_sed['PACS100']/hrs_err['PACS100_err'] < 5), 'PACS100_err'] = 5.*hrs_err.loc[(hrs_sed['PACS100']/hrs_err['PACS100_err'] < 5) & (hrs_sed['PACS100'] != 0), 'PACS100_err']
@@ -98,9 +98,9 @@ waves = np.array([12., 22., 100., 160., 250., 350., 500.])
 
 # Uncomment to fit sources with only N detected points.
 # Change the integer on the right side of '==' to N.
-
-sed_use = hrs_sed[nbands_detect >= 4]
-err_use = hrs_err[nbands_detect >= 4]
+src_use = ((nbands_detect >= 4) & np.isfinite(hrs_sed['W3']) & np.isfinite(hrs_sed['W4']))
+sed_use = hrs_sed[src_use]
+err_use = hrs_err[src_use]
 names_use = sed_use.index
 
 base_model = bat_model.GreybodyPowerlaw(0.0, 25., 2.0, 0.0, 2.0, 45.0)
@@ -111,8 +111,8 @@ bayes = bat_fit.SEDBayesFitter(threads=8)
 #base_model.wturn.fixed = True
 base_model.beta.fixed = True
 
-for n in names_use:
-    
+#for n in names_use:
+for n in [67, 124, 140, 183, 261, 263]:    
     print 'Fitting: HRS ', n
     src_sed = sed_use.loc[n][filters]/1000.
     src_err = err_use.loc[n][filt_err]/1000.
@@ -176,6 +176,7 @@ for n in names_use:
     model_init.wturn.fixed = False
     model_init.beta.fixed = True
     model_init.tdust.fixed = False
+    model_init.mdust.value = 5.0
     
     # Fit the model using MCMC
     model_final = bayes.fit(model_init, waves[flux_use], flux[flux_use], yerr=flux_err[flux_use], use_nondetect=True,
