@@ -543,8 +543,13 @@ class Dale2014(object):
 		self.norms = np.zeros((len(self.alpha_use), len(self.fracAGN_use)))
 
 		def errfunc(norm, obs, model, err):
-			return (obs - (norm*model)) / err
-	
+			detected = np.isfinite(obs)
+			return (obs[detected] - 10**(norm+np.log10(model[detected])) / err[detected])
+        
+		def nll(norm, obs, model, err):
+			total_model = 10**(norm+np.log10(model))
+			return -log_like(obs, err, total_model)
+
 		zcorr = (1 + self.redshift)
 		for a in range(len(self.alpha_use)):
 			for f in range(len(self.fracAGN_use)):
@@ -554,12 +559,13 @@ class Dale2014(object):
 				for w in range(len(x)):
 					sed = self.get_sed(self.alpha_use[a], self.fracAGN[f])
 					model_fluxes[w] = filters.calc_mono_flux(filts[w],
-															 self.waves*zcorr, sed)
-				out = opt.leastsq(errfunc, 1, args=(y, model_fluxes, yerr), maxfev=1000)
-
-				self.norms[a, f] = out[0][0]
-				self.chi_sq[a, f] = np.sum(errfunc(self.norms[a, f], y,
-										   model_fluxes, yerr)**2)
+															 self.waves*zcorr, sed*zcorr)
+				out_ls = opt.leastsq(errfunc, 1, args=(y, model_fluxes, yerr), maxfev=1000)
+				out = opt.minimize(nll, out_ls[0][0], args=(y, model_fluxes, yerr)) 
+				self.norms[a, f] = out.x
+				#self.chi_sq[a, f] = np.sum(errfunc(self.norms[a, f], y,
+				#						   model_fluxes, yerr)**2)
+				self.chi_sq[a, f] = nll(self.norms[a,f], y, model_fluxes, yerr)
 
 		self.best_fit = {}
 		indmin = np.where(self.chi_sq == min(self.chi_sq.flatten()))
@@ -575,10 +581,10 @@ class Dale2014(object):
 								   self.best_fit['norm'])
 		self.best_fit['LIR'] = np.log10(lir)
 
-	def get_sed(self, alph, fa, norm=1.0):
+	def get_sed(self, alph, fa, norm=0.0):
 		i = self.alpha == alph
 		j = self.fracAGN == fa
-		sed = norm*10**self.models[i, :, j].flatten()
+		sed = 10**(norm+self.models[i, :, j]).flatten()
 		return sed
 
 	def calc_luminosity(self, alph, fa, norm=1.0, low=8., high=1000.):
@@ -663,8 +669,8 @@ class DecompIR(object):
 			total_model = (10**(norm_agn+np.log10(agn_model)) + 10**(norm_host+np.log10(host_model)))
 			return -log_like(obs, err, total_model)
 
-		print y
-		print yerr    
+		#print y
+		#print yerr    
 		for h in range(len(self.host_use)):
 
 			agn_model_fluxes = np.zeros(len(x))
@@ -679,7 +685,7 @@ class DecompIR(object):
 			# Use least-squares to get near the MLE	                   
 			out_ls = opt.leastsq(errfunc, [0, 0], args=(y, agn_model_fluxes, host_model_fluxes,yerr), maxfev=1000)
 			out = opt.minimize(nll, [out_ls[0][0], out_ls[0][1]], args=(y, agn_model_fluxes, host_model_fluxes, yerr)) 
-			print out
+			#print out
 			#self.norms[h, 0] = out[0][0]
 			#self.norms[h, 1] = out[0][1]
 			self.norms[h, 0] = out.x[0]
