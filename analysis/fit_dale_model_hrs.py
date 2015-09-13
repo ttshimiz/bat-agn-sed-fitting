@@ -103,7 +103,7 @@ src_use = ((nbands_detect >= 4) & np.isfinite(hrs_sed['W3']) & np.isfinite(hrs_s
 sed_use = hrs_sed[src_use]
 err_use = hrs_err[src_use]
 names_use = sed_use.index
-
+#names_use = [4]
 
 # Base Decompir 2014 model
 dale_model = bat_model.Dale2014()
@@ -116,6 +116,7 @@ for n in names_use:
     flux_use = flux[flux_detected]
     src_err = err_use.loc[n][filt_err]/1000.
     flux_err = np.array(src_err, dtype=np.float)
+    #flux_err[flux_err < 0.1*flux] = 0.1*flux[flux_err < 0.1*flux]
     flux_err_use = flux_err[flux_detected]
     filt_detected = filters[flux_detected]
     waves_use = waves[flux_detected]

@@ -544,7 +544,7 @@ class Dale2014(object):
 
 		def errfunc(norm, obs, model, err):
 			detected = np.isfinite(obs)
-			return (obs[detected] - 10**(norm+np.log10(model[detected])) / err[detected])
+			return (obs[detected] - 10**(norm+np.log10(model[detected]))) / err[detected]
         
 		def nll(norm, obs, model, err):
 			total_model = 10**(norm+np.log10(model))
@@ -558,13 +558,12 @@ class Dale2014(object):
 
 				for w in range(len(x)):
 					sed = self.get_sed(self.alpha_use[a], self.fracAGN[f])
-					model_fluxes[w] = filters.calc_mono_flux(filts[w],
-															 self.waves*zcorr, sed*zcorr)
-				out_ls = opt.leastsq(errfunc, 1, args=(y, model_fluxes, yerr), maxfev=1000)
+					model_fluxes[w] = filters.calc_mono_flux(filts[w], self.waves*zcorr, sed*zcorr)
+				
+				out_ls = opt.leastsq(errfunc, -2, args=(y, model_fluxes, yerr), maxfev=1000)
 				out = opt.minimize(nll, out_ls[0][0], args=(y, model_fluxes, yerr)) 
-				self.norms[a, f] = out.x
-				#self.chi_sq[a, f] = np.sum(errfunc(self.norms[a, f], y,
-				#						   model_fluxes, yerr)**2)
+				
+				self.norms[a, f] = out.x[0]
 				self.chi_sq[a, f] = nll(self.norms[a,f], y, model_fluxes, yerr)
 
 		self.best_fit = {}
@@ -587,7 +586,7 @@ class Dale2014(object):
 		sed = 10**(norm+self.models[i, :, j]).flatten()
 		return sed
 
-	def calc_luminosity(self, alph, fa, norm=1.0, low=8., high=1000.):
+	def calc_luminosity(self, alph, fa, norm=0.0, low=8., high=1000.):
 		sed = self.get_sed(alph, fa, norm=norm)
 		waves = self.waves
 		freq = c_micron/waves
