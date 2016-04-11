@@ -481,7 +481,7 @@ class GreybodyPowerlaw(Fittable1DModel):
 		return lum
 
 
-class Dale2014(object):
+class Dale14(object):
 
 	def __init__(self, redshift=0.001, lumD=None):
 
@@ -555,9 +555,9 @@ class Dale2014(object):
 			for f in range(len(self.fracAGN_use)):
 
 				model_fluxes = np.zeros(len(x))
-
+				sed = self.get_sed(self.alpha_use[a], self.fracAGN[f])
+				
 				for w in range(len(x)):
-					sed = self.get_sed(self.alpha_use[a], self.fracAGN[f])
 					model_fluxes[w] = filters.calc_mono_flux(filts[w], self.waves*zcorr, sed*zcorr)
 				
 				out_ls = opt.leastsq(errfunc, -2, args=(y, model_fluxes, yerr), maxfev=1000)
