@@ -17,7 +17,9 @@ tex_names = {'mdust': r'$M_{dust}$',
              'alpha': r'$\alpha$',
              'beta': r'$\beta$',
              'pownorm': r'$N_{pl}$',
-             'wturn': r'$\lambda_{turn}$'}
+             'wturn': r'$\lambda_{turn}$',
+             'norm': r'$N_{old}$',
+             'temp': r'$T_{old}$'}
 
 
 def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
@@ -25,21 +27,34 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
              plot_mono_fluxes=False, filts=None,
              plot_fit_spread=False, nspread=1000,
              name=None, plot_params=False,
-             seaborn_context='notebook'):
+             seaborn_context='notebook', fig=None, subplot=None):
 
     
     seaborn.set(context=seaborn_context)
-    seaborn.set_style('ticks')
+    seaborn.set(context='notebook', color_codes=True, style='ticks')
+    mpl.rcParams['xtick.labelsize'] = 14
+    mpl.rcParams['ytick.labelsize'] = 14
+    mpl.rcParams['axes.labelsize'] = 16
+    mpl.rcParams['legend.fontsize'] = 14
+    mpl.rcParams['font.size'] = 14
+    mpl.rcParams['mathtext.fontset'] = 'stixsans'
     red = seaborn.xkcd_rgb['pale red']
     blue = seaborn.xkcd_rgb['denim blue']
     lt_blue = seaborn.xkcd_rgb['pastel blue']
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
+    
+    if fig is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+    else:
+        if subplot is None:
+            ax = fig.add_subplot(111)
+        else:
+            ax = fig.add_subplot(subplot)
+    
     zcorr = 1 + model.redshift
-    median_model = model(model_waves/zcorr) * zcorr
+    #median_model = model(model_waves/zcorr) * zcorr
 
-    ax.loglog(model_waves, median_model, color=blue, label='Best Fit Model')
+    #ax.loglog(model_waves, median_model, color=blue, label='Best Fit Model')
 
     if plot_fit_spread:
         dummy = model.copy()
@@ -53,9 +68,10 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
             dummy.parameters[~fixed] = model.chain_nb[param_rand[i]]
             rand_sed[i, :] = dummy(model_waves/zcorr) * zcorr
 
-        model_2_5, model_97_5 = np.percentile(rand_sed, [2.5, 97.5], axis=0)
+        model_2_5, model_50, model_97_5 = np.percentile(rand_sed, [2.5, 50.0, 97.5], axis=0)
+        ax.loglog(model_waves, model_50, color=blue, label='Best Fit Model')
         ax.fill_between(model_waves, model_2_5, model_97_5, color=lt_blue,
-                        alpha=0.35, label='_nolabel')
+                        alpha=0.5, label='_nolabel')
 
     if plot_components:
         ncomps = model.n_components
@@ -75,7 +91,7 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
         filts = np.array(filts)[~undetected]
         mono_fluxes = np.array([filters.calc_mono_flux(f, fwaves[f],
                                 dummy2(fwaves[f]/zcorr))*zcorr for f in filts])
-        ax.plot(waves[~undetected], mono_fluxes, marker='^', ls='None',
+        ax.plot(waves[~undetected], mono_fluxes, marker='s', ls='None',
                 color=red, label='Model Fluxes')
         if sum(undetected) > 0:
             fluxes = np.hstack([mono_fluxes, obs_flux[~undetected],
@@ -99,8 +115,11 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
         if sum(undetected) > 0:
             ax.quiver(waves[undetected], obs_err[undetected],
                       np.zeros(sum(undetected)),
-                      -0.025*np.ones(sum(undetected)),
-                      width=0.004, color='k')
+                      -np.ones(sum(undetected)),
+                      width=0.005, color='r', scale=15, scale_units='height',
+                      units='width')
+            #ax.plot(waves[undetected], obs_err[undetected],
+            #        marker='o', mec=red, mfc='None', mew=1.5, ls='None')
     if plot_params:
         fs = mpl.rcParams['legend.fontsize']
         for i, n in enumerate(model.param_names):
@@ -114,11 +133,11 @@ def plot_fit(waves, obs_flux, model, model_waves=np.arange(1, 1000),
                     transform=ax.transAxes, fontsize=fs)
 
     if name is not None:
-        ax.set_title(name)
+        ax.set_title(name, fontsize=14)
 
     ax.set_xlim([1, 1000])
     ax.set_ylim([10**(-0.5)*min(fluxes), 10**(0.5)*max(fluxes)])
-    ax.legend(loc='upper left')
+    #ax.legend(loc='upper left')
     ax.set_xlabel('Wavelength [micron]')
     ax.set_ylabel('Flux Density [Jy]')
     seaborn.despine()
@@ -133,7 +152,7 @@ def plot_triangle(model, quantiles=[0.16, 0.5, 0.84]):
     labels = [tex_names[n] for n in np.array(model.param_names)[~fixed]]
 
     fig = triangle.corner(model.chain_nb, quantiles=quantiles,
-                          labels=labels, verbose=False)
+                          labels=labels, verbose=False, plot_contours=False)
     seaborn.despine()
     return fig
 

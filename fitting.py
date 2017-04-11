@@ -34,9 +34,14 @@ def log_prior(params, sed_model, fixed):
     bounds = np.array([sed_model.bounds[n] for n in sed_model.param_names])
     bounds = bounds[~fixed]
     lp = np.array(map(uniform_prior, params, bounds))
-    if not fixed[pnames == 'wturn']:
+    if (not fixed[pnames == 'wturn']):
         j = pnames[~fixed] == 'wturn'
         lp[j] = gaussian_prior(params[j], 45.0, 20.0)
+ 
+#    if (not fixed[pnames == 'tdust']):
+#        j = pnames[~fixed] == 'tdust'
+#        lp[j] = gaussian_prior(params[j], 23.0, 5.0)   
+    
     return sum(lp)
 
 
@@ -64,6 +69,7 @@ def uniform_prior(x, bounds):
         return np.log(1.0/(bounds[1] - bounds[0]))
     else:
         return -np.inf
+
 
 def gaussian_prior(x, mu, sigma):
     return -0.5*((x-mu)**2/sigma**2 + np.log(2*np.pi*sigma**2))
@@ -151,7 +157,7 @@ class SEDBayesFitter(object):
 
         # Use narrow tophat filter if filts is None
         if filts is None:
-            filts = ['Top' for xi in x]
+            filts = np.array(['Top' for xi in x])
 
         # Get rid of the non-detections if use_nondetect is False
         if not use_nondetect:
